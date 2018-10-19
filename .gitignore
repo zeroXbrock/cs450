@@ -1,0 +1,25 @@
+### ignore files without extensions (binaries)
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# ignore archive files
+*.tar
+*.zip
+*.gz
+
+# ignore media files
+*.mp4
+*.mov
+
+# ignore writeups
+*.pdf
+*.docx
+
+# ignore premier files
+*.prproj
