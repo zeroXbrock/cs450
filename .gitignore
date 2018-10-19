@@ -8,6 +8,9 @@
 # Unignore all dirs
 !*/
 
+# Unignore makefiles
+!*/Makefile
+
 # ignore archive files
 *.tar
 *.zip
