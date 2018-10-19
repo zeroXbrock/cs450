@@ -23,3 +23,6 @@
 
 # ignore premier files
 *.prproj
+
+# ignore stupid mac shit
+*.DS_Store
