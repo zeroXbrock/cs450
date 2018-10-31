@@ -18,6 +18,7 @@
 #include "GLUT/glut.h"
 
 #include "loadobjfile.cpp"
+#include "sphere.cpp"
 
 //	This is a sample OpenGL / GLUT program
 //
@@ -63,19 +64,19 @@ const int GLUIFALSE = { false };
 
 // initial window size:
 
-const int INIT_WINDOW_SIZE = { 600 };
+const int INIT_WINDOW_SIZE = { 700 };
 
 
 // size of the box:
 
-const float BOXSIZE = { 1.f };
+const float BOXSIZE = { 0.9f };
 
 
 // global time
 float Time;
 
 // light position shift
-float lightd;
+float delta;
 
 // multiplication factors for input interaction:
 //  (these are known from previous experience)
@@ -251,6 +252,7 @@ void	Axes( float );
 void	HsvRgb( float[3], float [3] );
 void	drawBoxFlat(float, float, float);
 void 	drawBoxSmooth(float, float, float);
+void	drawBlip(float, float, float, float, float, float);
 
 // main program:
 
@@ -316,10 +318,10 @@ Animate( )
 	ms %= MS_IN_ANIMATION_CYCLE;
 	Time = (float)ms / (float)MS_IN_ANIMATION_CYCLE;
 
-	lightd = cosf(2 * M_PI * Time);
+	delta = cosf(2 * M_PI * Time);
 
 	if (DebugOn)
-		fprintf(stderr, "%.6f\n", lightd);
+		fprintf(stderr, "%.6f\n", delta);
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -331,7 +333,7 @@ void SetMaterial(float r, float g, float b, float shininess)
 {
 	glMaterialfv(GL_BACK, GL_EMISSION, Array3(0., 0., 0.));
 	glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4f, White));
-	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., White));
+	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(0.8f, White));
 	glMaterialfv(GL_BACK, GL_SPECULAR, Array3(0., 0., 0.));
 	glMaterialf(GL_BACK, GL_SHININESS, 2.f);
 	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));
@@ -339,6 +341,16 @@ void SetMaterial(float r, float g, float b, float shininess)
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Array3(r, g, b));
 	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(.8f, White));
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+}
+
+void drawBall()
+{
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+		glTranslatef(1 + delta, 2 * delta, 1 + delta);
+		glScalef(1,1,1);
+		MjbSphere(2, 60, 60);
+	glPopMatrix();
 }
 
 void SetPointLight(int ilight, float x, float y, float z, float r, float g, float b)
@@ -397,26 +409,6 @@ Display( )
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, White));
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-	SetMaterial(1, 0, 0.5, 1);
-	SetPointLight(GL_LIGHT0, 
-		1 + lightd, 2 * lightd, 1 + lightd, 	// position xyz
-		0, 0, 1);		// color
-	SetSpotLight(GL_LIGHT1, 
-		3, 0, 0, 	// position xyz
-		0, 0, 0, 	// direction xyz
-		1, 0, 0);	// color
-	SetSpotLight(GL_LIGHT2,
-		0, 0, 3,  // position xyz
-		0, 0, 0,  // direction xyz
-		0, 1, 0); // color
-
-	// this is here because we are going to do object (and thus normal) scaling:
-	glEnable(GL_NORMALIZE);
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
-	glEnable(GL_LIGHT2);
 
 	// set the viewport to a square centered in the window:
 
@@ -502,18 +494,12 @@ Display( )
 			glRotatef( 90.,   0., 1., 0. );
 			glCallList( BoxList );
 		glPopMatrix( );
-
-		/* glPushMatrix();
-			glRotatef(90., 0., 1., 0.);
-			glCallList(LamboList);
-		glPopMatrix(); */
 	}
 
 	// draw some gratuitous text that just rotates on top of the scene:
 
 	glDisable( GL_DEPTH_TEST );
 	
-
 
 	// draw some gratuitous text that is fixed on the screen:
 	//
@@ -525,16 +511,47 @@ Display( )
 	// the modelview matrix is reset to identity as we don't
 	// want to transform these coordinates
 
+	// draw moving box
+	glMatrixMode(GL_MODELVIEW);
+	glRotatef(90 * delta, 0, 1, 0.5);
+	drawBoxSmooth(0, 2.5, 0);
+	glRotatef(-90 * delta, 0, 1, 0.5);
+	//glLoadIdentity();
+
 	glDisable( GL_DEPTH_TEST );
+
+	// draw lights
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity( );
 	gluOrtho2D( 0., 100.,     0., 100. );
-	glMatrixMode( GL_MODELVIEW );
-	
+	//glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity( );
-	//glColor3f( 1., 1., 1. );
-	//DoRasterString( 5., 5., 0., "Text That Doesn't" );
 
+	drawBlip(2, 2 * delta, 2, 1, 1, 1);
+	
+	SetMaterial(0.5, 0, 0.5, 1);
+
+	SetPointLight(GL_LIGHT0,
+				  2, 2 * delta, 2, // position xyz
+				  1, 1, 1);							  // color
+
+	SetSpotLight(GL_LIGHT1,
+				 3, 0, 0,  // position xyz
+				 0, 0, 0,  // direction xyz
+				 1, 0, 0); // color
+	SetSpotLight(GL_LIGHT2,
+				 0, 0, 3,  // position xyz
+				 0, 0, 0,  // direction xyz
+				 0, 1, 0); // color
+
+
+	// this is here because we are going to do object (and thus normal) scaling:
+	glEnable(GL_NORMALIZE);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
+	glEnable(GL_LIGHT2);
 
 	// swap the double-buffered framebuffers:
 
@@ -854,13 +871,16 @@ InitLists( )
 		drawBoxFlat(1.1,0,0);
 		drawBoxSmooth(0,1.1,0);
 
-	glEndList( );
+		// draw spotlight blips
+		drawBlip(3, 0, 0, 1, 0, 0);
+		drawBlip(0, 0, 3, 0, 1, 0);
 
+		glEndList();
 
-	// create the axes:
+		// create the axes:
 
-	AxesList = glGenLists( 1 );
-	glNewList( AxesList, GL_COMPILE );
+		AxesList = glGenLists(1);
+		glNewList(AxesList, GL_COMPILE);
 		glLineWidth( AXES_WIDTH );
 			Axes( 2.f );
 		glLineWidth( 1. );
@@ -971,6 +991,62 @@ void drawBoxSmooth(float x, float y, float z)
 				glVertex3f(dx + x, -dy + y, dz + z);
 
 	glEnd();
+}
+
+void drawBlip(float x, float y, float z, float r, float g, float b){
+	float dx = BOXSIZE / 20.f;
+	float dy = BOXSIZE / 20.f;
+	float dz = BOXSIZE / 20.f;
+
+	glPushMatrix();
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_QUADS);
+		glColor3f(r, g, b);
+		
+			glNormal3f(0. + x, 0. + y, 1. + z);
+				glVertex3f(-dx + x, -dy + y, dz + z);
+				glVertex3f(dx + x, -dy + y, dz + z);
+				glVertex3f(dx + x, dy + y, dz + z);
+				glVertex3f(-dx + x, dy + y, dz + z);
+
+			glNormal3f(0. + x, 0. + y, -1. + z);
+				glTexCoord2f(0., 0.);
+				glVertex3f(-dx + x, -dy + y, -dz + z);
+				glTexCoord2f(0., 1.);
+				glVertex3f(-dx + x, dy + y, -dz + z);
+				glTexCoord2f(1., 1.);
+				glVertex3f(dx + x, dy + y, -dz + z);
+				glTexCoord2f(1., 0.);
+				glVertex3f(dx + x, -dy + y, -dz + z);
+
+			glNormal3f(1. + x, 0. + y, 0. + z);
+				glVertex3f(dx + x, -dy + y, dz + z);
+				glVertex3f(dx + x, -dy + y, -dz + z);
+				glVertex3f(dx + x, dy + y, -dz + z);
+				glVertex3f(dx + x, dy + y, dz + z);
+
+			glNormal3f(-1. + x, 0. + y, 0. + z);
+				glVertex3f(-dx + x, -dy + y, dz + z);
+				glVertex3f(-dx + x, dy + y, dz + z);
+				glVertex3f(-dx + x, dy + y, -dz + z);
+				glVertex3f(-dx + x, -dy + y, -dz + z);
+
+			glNormal3f(0. + x, 1. + y, 0. + z);
+				glVertex3f(-dx + x, dy + y, dz + z);
+				glVertex3f(dx + x, dy + y, dz + z);
+				glVertex3f(dx + x, dy + y, -dz + z);
+				glVertex3f(-dx + x, dy + y, -dz + z);
+
+			glNormal3f(0. + x, -1. + y, 0. + z);
+				glVertex3f(-dx + x, -dy + y, dz + z);
+				glVertex3f(-dx + x, -dy + y, -dz + z);
+				glVertex3f(dx + x, -dy + y, -dz + z);
+				glVertex3f(dx + x, -dy + y, dz + z);
+
+	glEnd();
+	glEnable(GL_LIGHTING);
+	glPopMatrix();
 }
 
 // the keyboard callback:
