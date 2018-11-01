@@ -221,7 +221,8 @@ int		WhichColor;				// index into Colors[ ]
 int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
-
+bool	freeze;					// freeze animation toggle
+bool	light1_on, light2_on, light3_on;	// obvi
 
 // function prototypes:
 
@@ -549,9 +550,18 @@ Display( )
 	glEnable(GL_NORMALIZE);
 
 	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
-	glEnable(GL_LIGHT2);
+	if (light1_on)
+		glEnable(GL_LIGHT0);
+	else
+		glDisable(GL_LIGHT0);
+	if (light2_on)
+		glEnable(GL_LIGHT1);
+	else
+		glDisable(GL_LIGHT1);
+	if (light3_on)
+		glEnable(GL_LIGHT2);
+	else
+		glDisable(GL_LIGHT2);
 
 	// swap the double-buffered framebuffers:
 
@@ -836,7 +846,10 @@ InitGraphics( )
 	glutTimerFunc( -1, NULL, 0 );
 	glutIdleFunc( NULL );
 
-	// init glew (a window must be open to do this):
+	// turn lights on
+	light1_on = true;
+	light2_on = true;
+	light3_on = true;
 
 #ifdef WIN32
 	GLenum err = glewInit( );
@@ -1068,7 +1081,23 @@ Keyboard( unsigned char c, int x, int y )
 		case 'P':
 			WhichProjection = PERSP;
 			break;
-
+		case 'f':
+		case 'F':
+			freeze = !freeze;
+			if (freeze)
+				glutIdleFunc(NULL);
+			else
+				glutIdleFunc(Animate);
+			break;
+		case '1':
+			light1_on = !light1_on;
+			break;
+		case '2':
+			light2_on = !light2_on;
+			break;
+		case '3':
+			light3_on = !light3_on;
+			break;
 		case 'q':
 		case 'Q':
 		case ESCAPE:
