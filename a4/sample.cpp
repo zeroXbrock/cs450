@@ -17,8 +17,6 @@
 #include <OpenGL/glu.h>
 #include "GLUT/glut.h"
 
-#include "loadobjfile.cpp"
-#include "sphere.cpp"
 
 //	This is a sample OpenGL / GLUT program
 //
@@ -342,16 +340,6 @@ void SetMaterial(float r, float g, float b, float shininess)
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Array3(r, g, b));
 	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(.8f, White));
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-}
-
-void drawBall()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-		glTranslatef(1 + delta, 2 * delta, 1 + delta);
-		glScalef(1,1,1);
-		MjbSphere(2, 60, 60);
-	glPopMatrix();
 }
 
 void SetPointLight(int ilight, float x, float y, float z, float r, float g, float b)
