@@ -335,7 +335,7 @@ void Display()
 	uKa = 0.5;
 	uKd = 0.5;
 	uKs = 0.3;
-	uSize = 2.0;
+	uSize = 1.0;
 	pointx = cos(Time * 18) * 2;
 	pointy = cos(Time * 13) * 3 - 2;
 	pointz = sin(Time * 18) * 2;

@@ -31,16 +31,14 @@ main( )
 													to the light position */
 	vE = vec3( 0., 0., 0. ) - ECposition.xyz;		/* vector from the point
 													to the eye position */
-	
-	
 
-	// vertex shader stuff
+	// vertex shader pattern animation
 	vert.y = vert.y + sin(2 * PI * uTime);
 	vert.x = vert.x * cos(2 * PI * uTime);
 	vert.z = vert.z + tan(PI * uTime) * AMP;
 
-	// get projected vertex position
-	//gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+	// set vertex ST position for fragment shader
+	vST = vert.xy; // swizzle them bits
 
 	// send it
 	gl_Position = gl_ModelViewProjectionMatrix * vec4( vert, 1. );
