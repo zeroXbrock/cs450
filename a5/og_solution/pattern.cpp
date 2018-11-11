@@ -12,6 +12,8 @@
 #include "glew.h"
 #endif
 
+#define TRUE 1
+#define FALSE 0
 #define PI 3.14159265
 
 #include "glslprogram.h"
@@ -33,9 +35,10 @@ int WhichColor;		 // index into Colors[ ]
 int WhichProjection; // ORTHO or PERSP
 int Xmouse, Ymouse;  // mouse values
 float Xrot, Yrot;	// rotation angles in degrees
-bool Frozen;
 float uSize;
 float Time = 0.;
+int AnimateFragment = 1;
+int AnimateVertex = 1;
 
 GLSLProgram *Pattern;
 
@@ -217,7 +220,7 @@ void Animate()
 	int ms = glutGet(GLUT_ELAPSED_TIME);
 	ms %= MS_PER_CYCLE;
 	Time = (float)ms / (float)(MS_PER_CYCLE - 1);
-	printf("%f\n", Time);
+	//printf("%f\n", Time);
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -335,7 +338,7 @@ void Display()
 	uKa = 0.5;
 	uKd = 0.5;
 	uKs = 0.3;
-	uSize = 1.0;
+	uSize = 2.0;
 	pointx = cos(Time * 18) * 2;
 	pointy = cos(Time * 13) * 3 - 2;
 	pointz = sin(Time * 18) * 2;
@@ -351,8 +354,8 @@ void Display()
 	Pattern->SetUniformVariable("uKa", uKa);
 	Pattern->SetUniformVariable("uKd", uKd);
 	Pattern->SetUniformVariable("uKs", uKs);
-	Pattern->SetUniformVariable("point", pointx, pointy, pointz);
-	Pattern->SetUniformVariable("maxdist", maxdist);
+	Pattern->SetUniformVariable("uAnimateFragment", AnimateFragment);
+	Pattern->SetUniformVariable("uAnimateVertex", AnimateVertex);
 
 	// Draw the shape
 	glShadeModel(GL_FLAT);
@@ -652,19 +655,26 @@ void Keyboard(unsigned char c, int x, int y)
 	case 'O':
 		WhichProjection = ORTHO;
 		break;
-
 	case 'p':
 	case 'P':
 		WhichProjection = PERSP;
 		break;
 
-	case 'f':
-	case 'F':
-		Frozen = !Frozen;
-		if (Frozen)
-			glutIdleFunc(NULL);
-		else
-			glutIdleFunc(Animate);
+	case 'b':					// enable both animations
+		AnimateVertex = TRUE;
+		AnimateFragment = TRUE;
+		break;
+	case 'f':					// freeze both animations
+		AnimateVertex = FALSE;
+		AnimateFragment = FALSE;
+		break;
+	case 'F':					// enable fragment animation, freezing vertex animation
+		AnimateFragment = TRUE;
+		AnimateVertex = FALSE;
+		break;
+	case 'V':					// enable vertex animation, freezing fragment animation
+		AnimateVertex = TRUE;
+		AnimateFragment = FALSE;
 		break;
 
 	case 'q':
