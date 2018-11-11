@@ -13,7 +13,7 @@ Vertex vs. Fragment:
 > A vertex is a calculated position which has not been rendered yet. A fragment is effectively a pixel (to be).
 
 `uniform` variables
-> `SetUniformVariable(...)` is called in `Display()` which means it's being updated every frame.
+> `SetUniformVariable(...)` is called in `Display()` which means it's being updated every frame. This is how you get animations into your shaders.
 
 Pro dev tip:
 > Get a GLSL linter for VS Code to highlight dat syntax. And get VS Code if you don't have it.
