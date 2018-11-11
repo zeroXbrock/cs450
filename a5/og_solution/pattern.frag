@@ -8,6 +8,7 @@ uniform vec3  uSpecularColor;		// light color
 uniform float uShininess;		    // specular exponent
 uniform float uSize;
 uniform float uTime;
+uniform int uAnimateFragment;		// to animate or not to animate...
 
 // my wavy vars
 const float PI = 	3.14159265;
@@ -20,10 +21,18 @@ in  vec3  vN;			// normal vector
 in  vec3  vL;			// vector from point to light
 in  vec3  vE;			// vector from point to eye
 
+// stores last known time value; hold state on freeze
+float lastTime;
 
 void
 main( )
 {
+	// update time while animation enabled
+	if (uAnimateFragment == 1)
+		lastTime = uTime;
+	else
+		lastTime = 1;
+
 	vec3 Normal 	= normalize(vN);
 	vec3 Light 		= normalize(vL);
 	vec3 Eye 		= normalize(vE);
@@ -35,27 +44,13 @@ main( )
 	-	home coordinates (uS0, uT0)
 	-	static size (uSize)
 	*/
-	//if( uS0-uSize/2. <= vST.s && vST.s <= uS0+uSize/2. &&
-    //    uT0-uSize/2. <= vST.t && vST.t <= uT0+uSize/2. )
-	float waviness = W * PI * uTime;
-	/*if (
-		(vST.t < vST.s * sin(waviness) && 
-		 vST.s >= vST.t * sin(waviness) &&
-		 vST.s >= vST.s * cos(waviness)
-		 ) ||
-		 (
-		 vST.t >= vST.s * cos(waviness) &&
-		 vST.s <= vST.t * sin(waviness) &&
-		 vST.s <= vST.s * sin(waviness)
-		 )
-		)
-		*/
-	float waveX = sin(W * PI * vST.s);
-	float waveY = tan(W * PI * vST.t);
-	if (vST.s < waveX + uSize && vST.t >= waveY)
-    {
-        myColor = vec3( 1., 0., 0. );
-    }
+
+	float waves = sin(lastTime * PI);
+	float cwaves = cos(lastTime * PI);
+	if (vST.t < sin(W * (vST.s * waves * 2)))
+        myColor = vec3( 1., waves/2, 0. );
+	else
+		myColor = vec3( uColor.x, uColor.y, waves/2);
 
 	// set ambient color
 	vec3 ambient = uKa * myColor;
