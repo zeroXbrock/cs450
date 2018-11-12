@@ -1030,3 +1030,5 @@ void HsvRgb(float hsv[3], float rgb[3])
 	rgb[1] = g;
 	rgb[2] = b;
 }
+
+/* Thanks Sean Rettig for some boilerplate code */

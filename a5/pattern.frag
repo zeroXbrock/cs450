@@ -31,7 +31,7 @@ main( )
 	if (uAnimateFragment == 1)
 		lastTime = uTime;
 	else
-		lastTime = 1;
+		lastTime = 0.5;
 
 	vec3 Normal 	= normalize(vN);
 	vec3 Light 		= normalize(vL);
