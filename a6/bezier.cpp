@@ -4,10 +4,6 @@
 #include "GLUT/glut.h"
 
 
-//  Curve Curves[NUMCURVES]; // if you are creating a pattern of curves
-//  Curve Stem;				// if you are not
-
-
 float cubicPoint(float t, float p0, float p1, float p2, float p3){
     return  powf((1. - t), 3.) * p0
             + 3 * t * powf((1. - t), 2.) * p1
@@ -72,7 +68,7 @@ void drawBezierCurve(float r, float g, float b, Curve c){
     Point p1 = c.p1;
     Point p2 = c.p2;
     Point p3 = c.p3;
-    
+
     glLineWidth(3.);
     glColor3f(r, g, b);
     glBegin(GL_LINE_STRIP);
@@ -87,4 +83,44 @@ void drawBezierCurve(float r, float g, float b, Curve c){
     }
     glEnd();
     glLineWidth(1.);
+}
+
+void setArm(Curve *c, float dx=0., float dy=0., float dz=0.){
+    Point p0, p1, p2, p3;
+    p0.x0 = 0;
+    p0.y0 = 0;
+    p0.z0 = 0;
+
+    p1.x0 = 1;
+    p1.y0 = 0;
+    p1.z0 = -1;
+
+    p2.x0 = 0;
+    p2.y0 = 1;
+    p2.z0 = -1;
+
+    p3.x0 = -1;
+    p3.y0 = 1;
+    p3.z0 = -2;
+
+    p0.x = p0.x0;
+    p0.y = p0.y0;
+    p0.z = p0.z0;
+
+    p1.x = p1.x0 + dx;
+    p1.y = p1.y0 + dy;
+    p1.z = p1.z0 + dz;
+
+    p2.x = p2.x0 + 1.2 * dx;
+    p2.y = p2.y0 + 1.2 * dy;
+    p2.z = p2.z0 + 1.2 * dz;
+
+    p3.x = p3.x0;
+    p3.y = p3.y0;
+    p3.z = p3.z0;
+
+    c->p0 = p0;
+    c->p1 = p1;
+    c->p2 = p2;
+    c->p3 = p3;
 }

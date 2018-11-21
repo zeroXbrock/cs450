@@ -1,5 +1,5 @@
-#define NUMCURVES 3
-#define NUMPOINTS 5
+#define NUMCURVES 4
+#define NUMPOINTS 20
 #include <math.h>
 
 struct Point
@@ -19,3 +19,4 @@ void RotateX(Point *p, float deg, float xc, float yc, float zc);
 void RotateY(Point *p, float deg, float xc, float yc, float zc);
 void RotateZ(Point *p, float deg, float xc, float yc, float zc);
 void drawBezierCurve(float r, float g, float b, Curve c);
+void setArm(Curve *c, float dx, float dy, float dz);

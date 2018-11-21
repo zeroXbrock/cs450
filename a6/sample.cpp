@@ -740,31 +740,20 @@ InitLists( )
 	glEndList( );
 	*/
 
-	Point p0, p1, p2, p3;
-	p0.x0 = 0;
-	p0.y0 = 0;
-	p0.z0 = 0;
-
-	p1.x0 = 1;
-	p1.y0 = 1;
-	p1.z0 = 1;
-
-	p2.x0 = 2;
-	p2.y0 = 2;
-	p2.z0 = 2;
-
-	p3.x0 = 3;
-	p3.y0 = 3;
-	p3.z0 = 3;
-
-	Stem.p0 = p0;
-	Stem.p1 = p1;
-	Stem.p2 = p2;
-	Stem.p3 = p3;
-
 	BoxList = glGenLists(1);
 	glNewList(BoxList, GL_COMPILE);
+		setArm(&Stem);
 		drawBezierCurve(0., 1., 0.6, Stem);
+
+		setArm(&Stem, 0., 1., 0.);
+		drawBezierCurve(0., 1., 0.6, Stem);
+
+		setArm(&Stem, 0., 1., 1.5);
+		drawBezierCurve(0., 1., 0.6, Stem);
+
+		setArm(&Stem, 0., 0.5, 2.);
+		drawBezierCurve(0., 1., 0.6, Stem);
+
 	glEndList();
 
 	// create the axes:
