@@ -193,6 +193,7 @@ int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 Curve Curves[NUMCURVES]; 		// if you are creating a pattern of curves
+Curve CurvesStatic[NUMCURVES];	// if you are creating a pattern of other curves
 Curve Stem;						// if you are not
 float 	dTime;					// global time variable; sawtooth oscillation from 0-1
 bool	doAnimate = true;		// to animate curves or nah
@@ -409,17 +410,13 @@ Display( )
 	else
 		glutIdleFunc(NULL);
 
-
-	// draw bezier shapes:
+	// draw animated bezier shapes:
 	for (int i = 0; i < NUMCURVES; i++)
 	{
 		/* draw curves */
 		// init curve coordinates
 		placeArm(&Curves[i], 0., (i * dTime)/4. + 0.1, 0.);
 		// curve modulation
-		//shiftp0(&Curves[i], 0., Curves[i-1].p3.y, 0.);
-		//shiftp1(&Curves[i], dTime * (float)(i+1) / 8., dTime + (float)(i+1) / (float)NUMCURVES, 0.);
-		//shiftp2(&Curves[i], -dTime * (float)(i+1) / 2., -dTime - (float)(i+1) / (float)NUMCURVES, 0.);
 		if (i > 0)
 			shiftp3(&Curves[i], 0., Curves[i - 1].p0.y - Curves[i].p3.y, 0.);
 		else
@@ -428,16 +425,26 @@ Display( )
 		// render curve, animating colors
 		drawBezierCurve(0.5 + dTime * ((float)(i+1) / (float)NUMCURVES), 0.7, 0.6, Curves[i]);
 
+		// render some static bezier curves
+		float color_factor = (float)(i + 1) / (float)NUMCURVES;
+		placeArm(&CurvesStatic[i], ((float)i / NUMCURVES) + 1., 0., 0.);
+		// scale height of endpoint
+		shiftp3(&CurvesStatic[i], -0.2, 0.2, 0.);
+		drawBezierCurve(color_factor / 3., 0.1 + color_factor / 1.5, 0.2 + color_factor / 2., CurvesStatic[i]);
+
 		/* render control points */
-		if (pointsVisible)
+		if (pointsVisible){
 			drawControlPoints(Curves[i]);
+			drawControlPoints(CurvesStatic[i]);
+		}
 
 		/* render control lines */
-		if (linesVisible)
+		if (linesVisible){
 			drawControlLines(Curves[i]);
+			drawControlLines(CurvesStatic[i]);
+		}
 	}
-	//setArm(&Stem, 0., 1., 0.);
-	//drawBezierCurve(0., 1., 0.6, Stem);
+	
 
 	// swap the double-buffered framebuffers:
 
