@@ -195,9 +195,9 @@ float	Xrot, Yrot;				// rotation angles in degrees
 Curve Curves[NUMCURVES]; 		// if you are creating a pattern of curves
 Curve Stem;						// if you are not
 float 	dTime;					// global time variable; sawtooth oscillation from 0-1
-int		doAnimate;				// boolean; to animate curves or nah
-int		pointsVisible;			// boolean; to draw control points or nah
-int		linesVisible;			// boolean; to draw control lines or nah
+bool	doAnimate = true;		// to animate curves or nah
+bool	pointsVisible = false;	// to draw control points or nah
+bool	linesVisible = false;	// to draw control lines or nah
 
 // function prototypes:
 
@@ -403,8 +403,11 @@ Display( )
 		glCallList( AxesList );
 	}
 
-	//glClear(GL_COLOR_BUFFER_BIT);
-	
+	// control animation w/ KB
+	if (doAnimate)
+		glutIdleFunc(Animate);
+	else
+		glutIdleFunc(NULL);
 
 
 	// draw bezier shapes:
@@ -426,10 +429,12 @@ Display( )
 		drawBezierCurve(0.5 + dTime * ((float)(i+1) / (float)NUMCURVES), 0.7, 0.6, Curves[i]);
 
 		/* render control points */
-		drawControlPoints(Curves[i]);
+		if (pointsVisible)
+			drawControlPoints(Curves[i]);
 
 		/* render control lines */
-		drawControlLines(Curves[i]);
+		if (linesVisible)
+			drawControlLines(Curves[i]);
 	}
 	//setArm(&Stem, 0., 1., 0.);
 	//drawBezierCurve(0., 1., 0.6, Stem);
@@ -776,7 +781,18 @@ Keyboard( unsigned char c, int x, int y )
 		case 'P':
 			WhichProjection = PERSP;
 			break;
-
+		case 'f':
+		case 'F':
+			doAnimate = !doAnimate;
+			break;
+		case 'k':
+		case 'K':
+			pointsVisible = !pointsVisible;
+			break;
+		case 'l':
+		case 'L':
+			linesVisible = !linesVisible;
+			break;
 		case 'q':
 		case 'Q':
 		case ESCAPE:
