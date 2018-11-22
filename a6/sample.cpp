@@ -42,6 +42,12 @@
 // the following, all constants are const variables except those which need to
 // be array sizes or cases in switch( ) statements.  Those are #defines.
 
+// science, bitch.
+#define TRUE 1
+#define FALSE 0
+#define PI 3.14159265
+#define MS_PER_CYCLE 5000
+
 
 // title of these windows:
 
@@ -189,6 +195,7 @@ int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 Curve Curves[NUMCURVES]; 		// if you are creating a pattern of curves
 Curve Stem;						// if you are not
+float 	dTime;					// global time variable; sawtooth oscillation from 0-1
 
 // function prototypes:
 
@@ -250,6 +257,8 @@ main( int argc, char *argv[ ] )
 
 	InitMenus( );
 
+	// enable animation
+	glutIdleFunc(Animate);
 
 	// draw the scene once and wait for some interaction:
 	// (this will never return)
@@ -276,6 +285,9 @@ Animate( )
 {
 	// put animation stuff in here -- change some global variables
 	// for Display( ) to find:
+	int ms = glutGet(GLUT_ELAPSED_TIME);
+	ms %= MS_PER_CYCLE;
+	dTime = (float)ms / (float)(MS_PER_CYCLE - 1);
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -396,17 +408,29 @@ Display( )
 
 	// draw the current object:
 
-	glCallList( BoxList );
+
+
+	//glCallList( BoxList );
 
 	if( DepthFightingOn != 0 )
 	{
-		glPushMatrix( );
-			glRotatef( 90.,   0., 1., 0. );
-			glCallList( BoxList );
-		glPopMatrix( );
+		//glPushMatrix( );
+		//	glRotatef( 90.,   0., 1., 0. );
+		//	glCallList( BoxList );
+		//glPopMatrix( );
 	}
 
+	setArm(&Stem);
+	drawBezierCurve(0., 1., 0.6, Stem);
 
+	setArm(&Stem, 0., 1., 0.);
+	drawBezierCurve(0., 1., 0.6, Stem);
+
+	setArm(&Stem, 0., 1., 1.5);
+	drawBezierCurve(0., 1., 0.6, Stem);
+
+	setArm(&Stem, 0., 0.5, 2.);
+	drawBezierCurve(0., 1., 0.6, Stem);
 
 	// swap the double-buffered framebuffers:
 
@@ -740,21 +764,12 @@ InitLists( )
 	glEndList( );
 	*/
 
+	/*
 	BoxList = glGenLists(1);
 	glNewList(BoxList, GL_COMPILE);
-		setArm(&Stem);
-		drawBezierCurve(0., 1., 0.6, Stem);
-
-		setArm(&Stem, 0., 1., 0.);
-		drawBezierCurve(0., 1., 0.6, Stem);
-
-		setArm(&Stem, 0., 1., 1.5);
-		drawBezierCurve(0., 1., 0.6, Stem);
-
-		setArm(&Stem, 0., 0.5, 2.);
-		drawBezierCurve(0., 1., 0.6, Stem);
-
+		//setArm(...)
 	glEndList();
+	*/
 
 	// create the axes:
 
