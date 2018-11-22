@@ -1,4 +1,4 @@
-#define NUMCURVES 8
+#define NUMCURVES 10
 #define NUMPOINTS 30
 #include <math.h>
 
@@ -19,9 +19,9 @@ void RotateX(Point, float, float, float, float);
 void RotateY(Point, float, float, float, float);
 void RotateZ(Point, float, float, float, float);
 void drawBezierCurve(float, float, float, Curve);
-void drawEndPoints(Curve *);
+void drawEndPoints(Curve);
 void drawPoint(float, float, float);
-void setArm(Curve *, float, float, float);
+void placeArm(Curve *, float, float, float);
 void shiftp0(Curve *, float, float, float);
 void shiftp1(Curve *, float, float, float);
 void shiftp2(Curve *, float, float, float);

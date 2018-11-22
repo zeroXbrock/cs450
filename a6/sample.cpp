@@ -408,15 +408,22 @@ Display( )
 	for (int i = 0; i < NUMCURVES; i++)
 	{
 		/* draw curves */
-		setArm(&Curves[i], 0., 0., 0.);
-		shiftp0(&Curves[i], 0.1 * i, 0., 0.1 * i);
-		shiftp1(&Curves[i], dTime * (float)(i+1) / 8., dTime + (float)(i+1) / (float)NUMCURVES, 0.);
-		shiftp2(&Curves[i], -dTime * (float)(i+1) / 2., -dTime - (float)(i+1) / (float)NUMCURVES, 0.);
-		shiftp3(&Curves[i], 0.1 * i, 0., 0.1 * i);
-		drawBezierCurve(0., 0.5 + dTime * ((float)i / (float)NUMCURVES), 0.6, Curves[i]);
+		// init curve coordinates
+		placeArm(&Curves[i], 0., (i * dTime)/4. + 0.1, 0.);
+		// curve modulation
+		//shiftp0(&Curves[i], 0., Curves[i-1].p3.y, 0.);
+		//shiftp1(&Curves[i], dTime * (float)(i+1) / 8., dTime + (float)(i+1) / (float)NUMCURVES, 0.);
+		//shiftp2(&Curves[i], -dTime * (float)(i+1) / 2., -dTime - (float)(i+1) / (float)NUMCURVES, 0.);
+		if (i > 0)
+			shiftp3(&Curves[i], 0., Curves[i - 1].p0.y - Curves[i].p3.y, 0.);
+		else
+			shiftp3(&Curves[i], 0., - Curves[i].p3.y, 0.);
 
-		/* draw end points */
-		drawEndPoints(&Curves[i]);
+		// render curve, animating colors
+		drawBezierCurve(0.5 + dTime * ((float)(i+1) / (float)NUMCURVES), 0.7, 0.6, Curves[i]);
+
+		/* render end points */
+		drawEndPoints(Curves[i]);
 	}
 	//setArm(&Stem, 0., 1., 0.);
 	//drawBezierCurve(0., 1., 0.6, Stem);

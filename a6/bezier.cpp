@@ -86,34 +86,34 @@ void drawBezierCurve(float r, float g, float b, Curve c){
 }
 
 // sets baseline arm parameters & allows animation via d<x..z>
-void setArm(Curve *c, float dx=0., float dy=0., float dz=0.){
+void placeArm(Curve *c, float x=0., float y=0., float z=0.){
     Point p0, p1, p2, p3;
-    p0.x0 = 0;
-    p0.y0 = 0;
-    p0.z0 = 0;
+    p0.x0 = x;
+    p0.y0 = y;
+    p0.z0 = z;
 
-    p1.x0 = 1;
-    p1.y0 = 0;
-    p1.z0 = -1;
+    p1.x0 = x + 1.;
+    p1.z0 = z + 0.85;
+    p1.y0 = y + 0.1;
 
-    p2.x0 = 0;
-    p2.y0 = 1;
-    p2.z0 = -1;
+    p2.x0 = x - 1.;
+    p2.z0 = z + 0.85;
+    p2.y0 = y + 0.2;
 
-    p3.x0 = -1;
-    p3.y0 = 1;
-    p3.z0 = -2;
+    p3.x0 = x;
+    p3.z0 = z;
+    p3.y0 = y + 0.3;
 
     p0.x = p0.x0;
     p0.y = p0.y0;
     p0.z = p0.z0;
 
-    p1.x = p1.x0 + (dx - (dx/2.));
-    p1.y = p1.y0 - (dy/2.);
+    p1.x = p1.x0;
+    p1.y = p1.y0;
     p1.z = p1.z0;
 
     p2.x = p2.x0;
-    p2.y = p2.y0 + (dy/2.);
+    p2.y = p2.y0;
     p2.z = p2.z0;
 
     p3.x = p3.x0;
@@ -124,6 +124,34 @@ void setArm(Curve *c, float dx=0., float dy=0., float dz=0.){
     c->p1 = p1;
     c->p2 = p2;
     c->p3 = p3;
+}
+
+// calls drawPoint() for each end of the given curve c
+void drawEndPoints(Curve c)
+{
+    float dx, dy, dz;
+
+    dx = c.p0.x;
+    dy = c.p0.y;
+    dz = c.p0.z;
+    drawPoint(dx, dy, dz);
+
+    dx = c.p3.x;
+    dy = c.p3.y;
+    dz = c.p3.z;
+    drawPoint(dx, dy, dz);
+}
+
+// draws a small white dot at <x,y,z>
+void drawPoint(float x, float y, float z)
+{
+    // move to position
+    glTranslatef(x, y, z);
+    // draw a small white sphere
+    glColor3f(1., 1., 1.);
+    glutSolidSphere(0.03, 20, 20);
+    // move back to origin
+    glTranslatef(-x, -y, -z);
 }
 
 // modifies p0 of curve positioning based on d<x..z>
@@ -155,28 +183,4 @@ void shiftp3(Curve *c, float dx, float dy, float dz){
     c->p3.x += dx;
     c->p3.y += dy;
     c->p3.z += dz;
-}
-
-void drawEndPoints(Curve *c){
-    float dx, dy, dz;
-    
-    dx = c->p0.x;
-    dy = c->p0.y;
-    dz = c->p0.z;
-    drawPoint(dx, dy, dz);
-
-    dx = c->p3.x;
-    dy = c->p3.y;
-    dz = c->p3.z;
-    drawPoint(dx, dy, dz);
-}
-
-void drawPoint(float x, float y, float z){
-    // move to position
-    glTranslatef(x, y, z);
-    // draw a small white sphere
-    glColor3f(1., 1., 1.);
-    glutSolidSphere(0.03, 20, 20);
-    // move back to origin
-    glTranslatef(-x, -y, -z);
 }
