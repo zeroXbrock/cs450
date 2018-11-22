@@ -252,16 +252,14 @@ main( int argc, char *argv[ ] )
 	InitLists( );
 
 
-	// init all the global variables used by Display( ):
-	// this will also post a redisplay
-
-	Reset( );/// move to end of this function???
-
-
 	// setup all the user interface stuff:
 
 	InitMenus( );
 
+	// init all the global variables used by Display( ):
+	// this will also post a redisplay
+
+	Reset();
 
 	// draw the scene once and wait for some interaction:
 	// (this will never return)
@@ -327,9 +325,6 @@ Display( )
 		glDisable( GL_DEPTH_TEST );
 
 
-	// specify shading to be flat:
-
-	//glShadeModel( GL_FLAT );
 	if (trippy)
 		glutSwapBuffers();
 
@@ -761,14 +756,16 @@ InitLists( )
 		glLineWidth( 1. );
 	glEndList( );
 
+	// create the static curves
 	StaticCurvesList = glGenLists(1);
 	glNewList(StaticCurvesList, GL_COMPILE);
 		for (int i = 0; i < NUMCURVES; i++){
 			/* render some static bezier curves */
 			float color_factor = (float)(i + 1) / (float)NUMCURVES;
-			placeArm(&CurvesStatic[i], ((float)i / NUMCURVES) + 1., 0., 0.);
+			placeArm(&CurvesStatic[i], 1., 0., 0.);
 			// scale height of endpoint
-			shiftp3(&CurvesStatic[i], -0.2, 0.2, 0.);
+			shiftp3(&CurvesStatic[i], -0.2, 0.4, 0.);
+			RotateY(&CurvesStatic[i].p3, ((float)i / NUMCURVES) * 360, 1.4, 1., 0.);
 			drawBezierCurve(color_factor / 3., 0.1 + color_factor / 1.5, 0.2 + color_factor / 2., CurvesStatic[i]);
 		}
 	glEndList();
