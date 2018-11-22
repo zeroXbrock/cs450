@@ -287,6 +287,7 @@ Animate( )
 	int ms = glutGet(GLUT_ELAPSED_TIME);
 	ms %= MS_PER_CYCLE;
 	dTime = (float)ms / (float)(MS_PER_CYCLE - 1);
+	dTime = sin(dTime * PI);
 
 	// force a call to Display( ) next time it is convenient:
 
@@ -402,16 +403,16 @@ Display( )
 
 	// draw the current object:
 
-	setArm(&Stem);
+	setArm(&Stem, 0. + (dTime * 0.2), 1., 0. + (dTime * 0.1));
 	drawBezierCurve(0., 1., 0.6, Stem);
 
-	setArm(&Stem, 0., 1., 0.);
+	setArm(&Stem, 0., 1. + (dTime * 0.5), 0.);
 	drawBezierCurve(0., 1., 0.6, Stem);
 
-	setArm(&Stem, 0., 1., 1.5);
+	setArm(&Stem, 0., 1., 1.5 + (dTime * 0.7));
 	drawBezierCurve(0., 1., 0.6, Stem);
 
-	setArm(&Stem, 0., 0.5, 2.);
+	setArm(&Stem, 0. - (dTime * 0.4), 0.5, 2.);
 	drawBezierCurve(0., 1., 0.6, Stem);
 
 	// swap the double-buffered framebuffers:
