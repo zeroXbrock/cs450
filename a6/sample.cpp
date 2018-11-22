@@ -400,20 +400,26 @@ Display( )
 		glCallList( AxesList );
 	}
 
+	//glClear(GL_COLOR_BUFFER_BIT);
+	
 
-	// draw the current object:
 
-	setArm(&Stem, 0. + (dTime * 0.2), 1., 0. + (dTime * 0.1));
-	drawBezierCurve(0., 1., 0.6, Stem);
+	// draw bezier shapes:
+	for (int i = 0; i < NUMCURVES; i++)
+	{
+		/* draw curves */
+		setArm(&Curves[i], 0., 0., 0.);
+		shiftp0(&Curves[i], 0.1 * i, 0., 0.1 * i);
+		shiftp1(&Curves[i], dTime * (float)(i+1) / 8., dTime + (float)(i+1) / (float)NUMCURVES, 0.);
+		shiftp2(&Curves[i], -dTime * (float)(i+1) / 2., -dTime - (float)(i+1) / (float)NUMCURVES, 0.);
+		shiftp3(&Curves[i], 0.1 * i, 0., 0.1 * i);
+		drawBezierCurve(0., 0.5 + dTime * ((float)i / (float)NUMCURVES), 0.6, Curves[i]);
 
-	setArm(&Stem, 0., 1. + (dTime * 0.5), 0.);
-	drawBezierCurve(0. + dTime, 1., 0.6, Stem);
-
-	setArm(&Stem, 0., 1., 1.5 + (dTime * 0.7));
-	drawBezierCurve(0. + dTime, 1. - dTime/2., 0.6, Stem);
-
-	setArm(&Stem, 0. - (dTime * 0.4), 0.5, 2.);
-	drawBezierCurve(0., 1., 0.6, Stem);
+		/* draw end points */
+		drawEndPoints(&Curves[i]);
+	}
+	//setArm(&Stem, 0., 1., 0.);
+	//drawBezierCurve(0., 1., 0.6, Stem);
 
 	// swap the double-buffered framebuffers:
 
@@ -726,7 +732,6 @@ InitLists( )
 	float dy = BOXSIZE / 6.f;
 	float dz = BOXSIZE / 6.f;
 	glutSetWindow( MainWindow );
-
 
 	// create the axes:
 
