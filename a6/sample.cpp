@@ -407,10 +407,10 @@ Display( )
 	drawBezierCurve(0., 1., 0.6, Stem);
 
 	setArm(&Stem, 0., 1. + (dTime * 0.5), 0.);
-	drawBezierCurve(0., 1., 0.6, Stem);
+	drawBezierCurve(0. + dTime, 1., 0.6, Stem);
 
 	setArm(&Stem, 0., 1., 1.5 + (dTime * 0.7));
-	drawBezierCurve(0., 1., 0.6, Stem);
+	drawBezierCurve(0. + dTime, 1. - dTime/2., 0.6, Stem);
 
 	setArm(&Stem, 0. - (dTime * 0.4), 0.5, 2.);
 	drawBezierCurve(0., 1., 0.6, Stem);

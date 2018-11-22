@@ -1,5 +1,5 @@
 #define NUMCURVES 4
-#define NUMPOINTS 20
+#define NUMPOINTS 30
 #include <math.h>
 
 struct Point
