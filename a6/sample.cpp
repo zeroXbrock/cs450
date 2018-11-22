@@ -186,7 +186,6 @@ int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
 int		DepthFightingOn;		// != 0 means to use the z-buffer
-GLuint	BoxList;				// object display list
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
 int		WhichColor;				// index into Colors[ ]
@@ -401,24 +400,7 @@ Display( )
 	}
 
 
-	// since we are using glScalef( ), be sure normals get unitized:
-
-	//glEnable( GL_NORMALIZE );
-
-
 	// draw the current object:
-
-
-
-	//glCallList( BoxList );
-
-	if( DepthFightingOn != 0 )
-	{
-		//glPushMatrix( );
-		//	glRotatef( 90.,   0., 1., 0. );
-		//	glCallList( BoxList );
-		//glPopMatrix( );
-	}
 
 	setArm(&Stem);
 	drawBezierCurve(0., 1., 0.6, Stem);
@@ -744,32 +726,6 @@ InitLists( )
 	float dz = BOXSIZE / 6.f;
 	glutSetWindow( MainWindow );
 
-	// create the object:
-	/*
-	BoxList = glGenLists( 1 );
-	glNewList( BoxList, GL_COMPILE );
-
-		glBegin( GL_QUADS );
-
-			for (int i = 0; i < 50; i++){
-				glColor3f( 0., (1.)/(i%10), (1.)/(i%5) );
-				glNormal3f( 0. + i, 1. * i,  0. - i );
-					glVertex3f( -dx+i, -dy+i,  dz+i );
-					glVertex3f(  dx*i, -dy+i,  dz );
-					glVertex3f(  dx*i,  dy,  dz );
-					glVertex3f( -dx*i,  dy,  dz );
-			}
-		glEnd( );
-
-	glEndList( );
-	*/
-
-	/*
-	BoxList = glGenLists(1);
-	glNewList(BoxList, GL_COMPILE);
-		//setArm(...)
-	glEndList();
-	*/
 
 	// create the axes:
 
