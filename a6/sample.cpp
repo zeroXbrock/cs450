@@ -195,6 +195,9 @@ float	Xrot, Yrot;				// rotation angles in degrees
 Curve Curves[NUMCURVES]; 		// if you are creating a pattern of curves
 Curve Stem;						// if you are not
 float 	dTime;					// global time variable; sawtooth oscillation from 0-1
+int		doAnimate;				// boolean; to animate curves or nah
+int		pointsVisible;			// boolean; to draw control points or nah
+int		linesVisible;			// boolean; to draw control lines or nah
 
 // function prototypes:
 
@@ -422,8 +425,11 @@ Display( )
 		// render curve, animating colors
 		drawBezierCurve(0.5 + dTime * ((float)(i+1) / (float)NUMCURVES), 0.7, 0.6, Curves[i]);
 
-		/* render end points */
-		drawEndPoints(Curves[i]);
+		/* render control points */
+		drawControlPoints(Curves[i]);
+
+		/* render control lines */
+		drawControlLines(Curves[i]);
 	}
 	//setArm(&Stem, 0., 1., 0.);
 	//drawBezierCurve(0., 1., 0.6, Stem);

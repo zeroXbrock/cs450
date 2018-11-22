@@ -85,6 +85,15 @@ void drawBezierCurve(float r, float g, float b, Curve c){
     glLineWidth(1.);
 }
 
+void drawLine(float x0, float y0, float z0, float x1, float y1, float z1){
+    glLineWidth(1.);
+    glColor3f(1.,1.,1.);
+    glBegin(GL_LINE_STRIP);
+        glVertex3f(x0, y0, z0);
+        glVertex3f(x1, y1, z1);
+    glEnd();
+}
+
 // sets baseline arm parameters & allows animation via d<x..z>
 void placeArm(Curve *c, float x=0., float y=0., float z=0.){
     Point p0, p1, p2, p3;
@@ -126,20 +135,34 @@ void placeArm(Curve *c, float x=0., float y=0., float z=0.){
     c->p3 = p3;
 }
 
-// calls drawPoint() for each end of the given curve c
-void drawEndPoints(Curve c)
-{
+// calls drawPoint() for each ctrl point of the given curve c
+void drawControlPoints(Curve c){
     float dx, dy, dz;
-
     dx = c.p0.x;
     dy = c.p0.y;
     dz = c.p0.z;
+    drawPoint(dx, dy, dz);
+
+    dx = c.p1.x;
+    dy = c.p1.y;
+    dz = c.p1.z;
+    drawPoint(dx, dy, dz);
+
+    dx = c.p2.x;
+    dy = c.p2.y;
+    dz = c.p2.z;
     drawPoint(dx, dy, dz);
 
     dx = c.p3.x;
     dy = c.p3.y;
     dz = c.p3.z;
     drawPoint(dx, dy, dz);
+}
+
+void drawControlLines(Curve c){
+    drawLine(c.p0.x, c.p0.y, c.p0.z, c.p1.x, c.p1.y, c.p1.z);
+    drawLine(c.p1.x, c.p1.y, c.p1.z, c.p2.x, c.p2.y, c.p2.z);
+    drawLine(c.p2.x, c.p2.y, c.p2.z, c.p3.x, c.p3.y, c.p3.z);
 }
 
 // draws a small white dot at <x,y,z>
@@ -149,7 +172,7 @@ void drawPoint(float x, float y, float z)
     glTranslatef(x, y, z);
     // draw a small white sphere
     glColor3f(1., 1., 1.);
-    glutSolidSphere(0.03, 20, 20);
+    glutSolidSphere(0.02, 20, 20);
     // move back to origin
     glTranslatef(-x, -y, -z);
 }
