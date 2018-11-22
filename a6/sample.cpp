@@ -181,6 +181,7 @@ const GLfloat FOGEND      = { 4. };
 
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes
+GLuint	StaticCurvesList;		// list to hold the static curves
 int		AxesOn;					// != 0 means to draw the axes
 int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
@@ -199,6 +200,7 @@ float 	dTime;					// global time variable; sawtooth oscillation from 0-1
 bool	doAnimate = true;		// to animate curves or nah
 bool	pointsVisible = false;	// to draw control points or nah
 bool	linesVisible = false;	// to draw control lines or nah
+bool	trippy = false;			// easter egg; trippy effect (press T)
 
 // function prototypes:
 
@@ -253,15 +255,13 @@ main( int argc, char *argv[ ] )
 	// init all the global variables used by Display( ):
 	// this will also post a redisplay
 
-	Reset( );
+	Reset( );/// move to end of this function???
 
 
 	// setup all the user interface stuff:
 
 	InitMenus( );
 
-	// enable animation
-	glutIdleFunc(Animate);
 
 	// draw the scene once and wait for some interaction:
 	// (this will never return)
@@ -329,7 +329,9 @@ Display( )
 
 	// specify shading to be flat:
 
-	glShadeModel( GL_FLAT );
+	//glShadeModel( GL_FLAT );
+	if (trippy)
+		glutSwapBuffers();
 
 
 	// set the viewport to a square centered in the window:
@@ -404,16 +406,18 @@ Display( )
 		glCallList( AxesList );
 	}
 
+	glCallList(StaticCurvesList);
+
 	// control animation w/ KB
 	if (doAnimate)
 		glutIdleFunc(Animate);
 	else
 		glutIdleFunc(NULL);
 
-	// draw animated bezier shapes:
+	// draw bezier shapes:
 	for (int i = 0; i < NUMCURVES; i++)
 	{
-		/* draw curves */
+		/* draw animated curves */
 		// init curve coordinates
 		placeArm(&Curves[i], 0., (i * dTime)/4. + 0.1, 0.);
 		// curve modulation
@@ -424,13 +428,6 @@ Display( )
 
 		// render curve, animating colors
 		drawBezierCurve(0.5 + dTime * ((float)(i+1) / (float)NUMCURVES), 0.7, 0.6, Curves[i]);
-
-		// render some static bezier curves
-		float color_factor = (float)(i + 1) / (float)NUMCURVES;
-		placeArm(&CurvesStatic[i], ((float)i / NUMCURVES) + 1., 0., 0.);
-		// scale height of endpoint
-		shiftp3(&CurvesStatic[i], -0.2, 0.2, 0.);
-		drawBezierCurve(color_factor / 3., 0.1 + color_factor / 1.5, 0.2 + color_factor / 2., CurvesStatic[i]);
 
 		/* render control points */
 		if (pointsVisible){
@@ -444,17 +441,14 @@ Display( )
 			drawControlLines(CurvesStatic[i]);
 		}
 	}
-	
-
-	// swap the double-buffered framebuffers:
-
-	glutSwapBuffers( );
-
 
 	// be sure the graphics buffer has been sent:
 	// note: be sure to use glFlush( ) here, not glFinish( ) !
+	
 
-	glFlush( );
+	// swap the double-buffered framebuffers:
+	glutSwapBuffers( );
+	glFlush();
 }
 
 
@@ -686,6 +680,7 @@ InitGraphics( )
 	// set the framebuffer clear values:
 
 	glClearColor( BACKCOLOR[0], BACKCOLOR[1], BACKCOLOR[2], BACKCOLOR[3] );
+	
 
 	// setup the callback functions:
 	// DisplayFunc -- redraw the window
@@ -729,7 +724,6 @@ InitGraphics( )
 	glutTimerFunc( -1, NULL, 0 );
 	glutIdleFunc( NULL );
 
-	// init glew (a window must be open to do this):
 
 #ifdef WIN32
 	GLenum err = glewInit( );
@@ -766,6 +760,18 @@ InitLists( )
 			Axes( 1.5 );
 		glLineWidth( 1. );
 	glEndList( );
+
+	StaticCurvesList = glGenLists(1);
+	glNewList(StaticCurvesList, GL_COMPILE);
+		for (int i = 0; i < NUMCURVES; i++){
+			/* render some static bezier curves */
+			float color_factor = (float)(i + 1) / (float)NUMCURVES;
+			placeArm(&CurvesStatic[i], ((float)i / NUMCURVES) + 1., 0., 0.);
+			// scale height of endpoint
+			shiftp3(&CurvesStatic[i], -0.2, 0.2, 0.);
+			drawBezierCurve(color_factor / 3., 0.1 + color_factor / 1.5, 0.2 + color_factor / 2., CurvesStatic[i]);
+		}
+	glEndList();
 }
 
 
@@ -799,6 +805,10 @@ Keyboard( unsigned char c, int x, int y )
 		case 'l':
 		case 'L':
 			linesVisible = !linesVisible;
+			break;
+		case 't':
+		case 'T':
+			trippy = !trippy;
 			break;
 		case 'q':
 		case 'Q':
