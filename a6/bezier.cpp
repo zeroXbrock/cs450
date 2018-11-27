@@ -135,8 +135,49 @@ void placeArm(Curve *c, float x=0., float y=0., float z=0.){
     c->p3 = p3;
 }
 
-// calls drawPoint() for each ctrl point of the given curve c
-void drawControlPoints(Curve c){
+void placeLeg(Curve *c, float x = 0., float y = 0., float z = 0.){
+    Point p0, p1, p2, p3;
+    p0.x0 = x;
+    p0.y0 = y;
+    p0.z0 = z;
+
+    p1.x0 = x + 0.1;
+    p1.z0 = z;
+    p1.y0 = y + 0.3;
+
+    p2.x0 = x + 0.4;
+    p2.z0 = z;
+    p2.y0 = y + 0.6;
+
+    p3.x0 = x + 0.6;
+    p3.z0 = z;
+    p3.y0 = y + 0.3;
+
+    p0.x = p0.x0;
+    p0.y = p0.y0;
+    p0.z = p0.z0;
+
+    p1.x = p1.x0;
+    p1.y = p1.y0;
+    p1.z = p1.z0;
+
+    p2.x = p2.x0;
+    p2.y = p2.y0;
+    p2.z = p2.z0;
+
+    p3.x = p3.x0;
+    p3.y = p3.y0;
+    p3.z = p3.z0;
+
+    c->p0 = p0;
+    c->p1 = p1;
+    c->p2 = p2;
+    c->p3 = p3;
+}
+
+    // calls drawPoint() for each ctrl point of the given curve c
+    void drawControlPoints(Curve c)
+{
     float dx, dy, dz;
     dx = c.p0.x;
     dy = c.p0.y;

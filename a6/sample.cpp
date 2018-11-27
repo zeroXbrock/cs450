@@ -762,7 +762,7 @@ InitLists( )
 		for (int i = 0; i < NUMCURVES; i++){
 			/* render some static bezier curves */
 			float color_factor = (float)(i + 1) / (float)NUMCURVES;
-			placeArm(&CurvesStatic[i], 1., 0., 0.);
+			placeLeg(&CurvesStatic[i], 1., 0., 0.);
 			// scale height of endpoint
 			shiftp3(&CurvesStatic[i], -0.2, 0.4, 0.);
 			RotateY(&CurvesStatic[i].p3, ((float)i / NUMCURVES) * 360, 1.4, 1., 0.);

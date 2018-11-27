@@ -1,5 +1,5 @@
 #define NUMCURVES 10
-#define NUMPOINTS 30
+#define NUMPOINTS 20
 #include <math.h>
 
 struct Point
@@ -23,6 +23,7 @@ void drawControlPoints(Curve);
 void drawControlLines(Curve);
 void drawPoint(float, float, float);
 void placeArm(Curve *, float, float, float);
+void placeLeg(Curve *, float, float, float);
 void shiftp0(Curve *, float, float, float);
 void shiftp1(Curve *, float, float, float);
 void shiftp2(Curve *, float, float, float);
