@@ -72,21 +72,26 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
 
     // draw boxes
     drawBoxes();
+	
+    // text and sphere can have their own matrixes
+    glPushMatrix();
+        SetMaterial(1.0, 1.0, 1.0, 1.);
+        // draw text to show the state
+        const char *wc = stateName(STATE);
+        float dx = len(stateName(STATE)) * -0.08;
+        float dy = -3.5;
+        float dz = 1.;
+        glTranslatef(dx, dy, dz);
+        DoStrokeString(0., 2., 0., 0.4, stateName(STATE));
+        glTranslatef(-dx, -dy, -dz);
 
-    // draw text to show the state
-    const char *wc = stateName(STATE);
-    float dx = len(stateName(STATE)) * -0.08;
-    float dy = -3.5;
-    float dz = 1.;
-    glTranslatef(dx, dy, dz);
-    DoStrokeString(0., 2., 0., 0.4, stateName(STATE));
-    glTranslatef(-dx, -dy, -dz);
-
-    // represent the internet as a sphere
-    glTranslatef(0., -1., 2.);
-    glColor3f(0.1, 0.6, 1.);
-    glutSolidSphere(0.3, 20, 20);
-    glTranslatef(0., 1., -2.);
+        SetMaterial(0.2, 0.6, 1.0, 1.);
+        // represent the internet as a sphere
+        glTranslatef(0., -1., 2.);
+        //glColor3f(0.4, 0.6, 1.);
+        glutSolidSphere(0.3, 20, 20);
+        glTranslatef(0., 1., -2.);
+    glPopMatrix();
 }
 
 
@@ -95,17 +100,26 @@ void drawBoxes(){
 
     for (int i = 0; i < 3; i++)
     {
-        Pattern->Use();
-
-        // draw node
         glTranslatef(1.5, 0., 0.);
-        glutSolidCube(1.);
-
-        // stop using pattern for blocks
-        Pattern->Use(0);
+        Pattern->Use();        
+        
+        glPushMatrix();
+            // draw node
+            // give each box its own matrix
+            if (i == pick && STATE == committing)
+                SetMaterial(1.0, 1.0, 1.0, 1.);
+            else
+                SetMaterial(0.1, 0.1, 0.1, 1.);
+            Pattern->SetUniformVariable("uColor", Array3(1., 1., 1.));
+            glutSolidCube(1.);
+        glPopMatrix();
 
         // draw blocks on chain for each node
-        drawBlocks();
+        glPushMatrix();
+            // stop using pattern for blocks
+            Pattern->Use(0);
+            drawBlocks();
+        glPopMatrix();
     }
     glTranslatef(-1.5, 0., 0.);
 }
@@ -130,7 +144,6 @@ void drawBlocks(){
 
     // draw proper number of blocks
     for (int i = 0; i < pick+1; i++){
-        glColor3f(1., 0.5, 0.05);
         glTranslatef(0., 0.6, 0.);
         glutSolidCube(0.5);
     }

@@ -406,14 +406,10 @@ Display( )
 	// Draw lamp
 	SetPointLight(GL_LIGHT0, 5., 5., 5., 1., 1., 1.);
 
-	// Draw the shape
+	// Draw the shapes
 	glShadeModel(GL_FLAT);
-	glPushMatrix();
-		SetMaterial(0.0, 1.0, 1.0, 1.);
-		myDisplay(doAnimate, Animate, dTime, DebugOn);
-		//glutSolidSphere(2, 500, 500);
-	glPopMatrix();
-
+	myDisplay(doAnimate, Animate, dTime, DebugOn);
+	
 	// stop using pattern
 	Pattern->Use(0);
 
