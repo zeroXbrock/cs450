@@ -6,6 +6,7 @@ uniform float uS0, uT0;				// home coordinates; bounding box for pattern
 uniform vec3  uColor;			    // object color
 uniform vec3  uSpecularColor;		// light color
 uniform float uShininess;		    // specular exponent
+uniform float uSize;
 uniform float uTime;
 uniform int uAnimateFragment;		// to animate or not to animate...
 
@@ -37,16 +38,19 @@ main( )
 	vec3 Eye 		= normalize(vE);
 	vec3 myColor 	= uColor;
 
-	// fragment effect processing here
+	// fragment "effect processing" here
+	/* using: 
+	-	vertex coordinates 	(vST) == <s, t>
+	-	home coordinates (uS0, uT0)
+	-	static size (uSize)
+	*/
+
 	float waves = sin(lastTime * PI);
 	float cwaves = cos(lastTime * PI);
-
-	if (vST.t < sin(W * (vST.s * waves * 2))){
-        myColor = vec3( 1., waves/2., 0. );
-	}
-	else{
-		myColor = vec3( uColor.x, uColor.y, waves/2);
-	}
+	if (vST.t < sin(W * (vST.s * waves * 2)))
+        myColor = vec3( 1., 1., waves/2.);
+	else
+		myColor = vec3( uColor.x, waves/2, uColor.z);
 
 	// set ambient color
 	vec3 ambient = uKa * myColor;

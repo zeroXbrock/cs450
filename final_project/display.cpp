@@ -12,13 +12,16 @@ Curve CurvesStatic[NUMCURVES];      // if you are creating a pattern of other cu
 Curve Stem;                         // if you are not
 int lastPick = 0;                   // hold a copy of the pick to compare
 
-GLSLProgram *Pattern;
+GLSLProgram *PatternA;
+GLSLProgram *PatternB;
 float White[] = {1., 1., 1., 1.};
 
 bool initShaderModule(){
-    Pattern = new GLSLProgram();
-    bool valid = Pattern->Create("pattern.vert", "pattern.frag");
-    if (!valid)
+    PatternA = new GLSLProgram();
+    PatternB = new GLSLProgram();
+    bool valid = PatternA->Create("pattern.vert", "pattern.frag");
+    bool valid2 = PatternB->Create("pattern.vert", "pattern.2.frag");
+    if (!valid || !valid2)
     {
         fprintf(stderr, "Shader cannot be created!\n");
         return false;
@@ -27,7 +30,8 @@ bool initShaderModule(){
     {
         fprintf(stderr, "Shader created.\n");
     }
-    Pattern->SetVerbose(false);
+    PatternA->SetVerbose(false);
+    PatternB->SetVerbose(false);
     return true;
 }
 
@@ -88,7 +92,6 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
         SetMaterial(0.2, 0.6, 1.0, 1.);
         // represent the internet as a sphere
         glTranslatef(0., -1., 2.);
-        //glColor3f(0.4, 0.6, 1.);
         glutSolidSphere(0.3, 20, 20);
         glTranslatef(0., 1., -2.);
     glPopMatrix();
@@ -97,27 +100,37 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
 
 void drawBoxes(){
     glTranslatef(-3., 0., 0.);
+    float bm[4];
 
     for (int i = 0; i < 3; i++)
     {
         glTranslatef(1.5, 0., 0.);
-        Pattern->Use();        
-        
         glPushMatrix();
+            
+            if (i == pick && STATE == committing){
+                PatternB->Use();
+                bm[0] =  1.;
+                bm[1] =  1.;
+                bm[2] =  1.;
+                bm[3] =  1.;
+            }
+            else{
+                PatternA->Use();
+                bm[0] =  0.1;
+                bm[1] =  0.1;
+                bm[2] =  0.1;
+                bm[3] =  1.0;
+            }
+            
             // draw node
-            // give each box its own matrix
-            if (i == pick && STATE == committing)
-                SetMaterial(1.0, 1.0, 1.0, 1.);
-            else
-                SetMaterial(0.1, 0.1, 0.1, 1.);
-            Pattern->SetUniformVariable("uColor", Array3(1., 1., 1.));
             glutSolidCube(1.);
-        glPopMatrix();
 
-        // draw blocks on chain for each node
-        glPushMatrix();
+            // draw blocks on chain for each node
             // stop using pattern for blocks
-            Pattern->Use(0);
+            PatternA->Use(0);
+            PatternB->Use(0);
+
+            SetMaterial(bm[0], bm[1], bm[2], bm[3]);
             drawBlocks();
         glPopMatrix();
     }

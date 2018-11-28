@@ -410,8 +410,9 @@ Display( )
 	glShadeModel(GL_FLAT);
 	myDisplay(doAnimate, Animate, dTime, DebugOn);
 	
-	// stop using pattern
-	Pattern->Use(0);
+	// stop using shaders
+	PatternA->Use(0);
+	PatternB->Use(0);
 
 	// disable lighting for basic color FX
 	glDisable(GL_LIGHTING);
@@ -450,7 +451,7 @@ void setShaders(){
 	S0 = 0.;
 	T0 = 1.;
 
-	ColorR = 1.0;
+	ColorR = 0.0;
 	ColorG = 0.5;
 	ColorB = 0.35;
 	if (DebugOn)
@@ -466,18 +467,30 @@ void setShaders(){
 	pointz = sin(dTime * 18) * 2;
 	maxdist = 5.;
 
-	Pattern->Use();
-	Pattern->SetUniformVariable("uS0", S0);
-	Pattern->SetUniformVariable("uT0", T0);
-	Pattern->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
-	Pattern->SetUniformVariable("uTime", dTime);
-	Pattern->SetUniformVariable("uState", STATE);
-	Pattern->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
-	Pattern->SetUniformVariable("uKa", uKa);
-	Pattern->SetUniformVariable("uKd", uKd);
-	Pattern->SetUniformVariable("uKs", uKs);
-	Pattern->SetUniformVariable("uAnimateFragment", AnimateFragment);
-	Pattern->SetUniformVariable("uAnimateVertex", AnimateVertex);
+	//PatternA->Use();
+	PatternA->SetUniformVariable("uS0", S0);
+	PatternA->SetUniformVariable("uT0", T0);
+	PatternA->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
+	PatternA->SetUniformVariable("uTime", dTime);
+	PatternA->SetUniformVariable("uState", STATE);
+	PatternA->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
+	PatternA->SetUniformVariable("uKa", uKa);
+	PatternA->SetUniformVariable("uKd", uKd);
+	PatternA->SetUniformVariable("uKs", uKs);
+	PatternA->SetUniformVariable("uAnimateFragment", AnimateFragment);
+	PatternA->SetUniformVariable("uAnimateVertex", AnimateVertex);
+
+	PatternB->SetUniformVariable("uS0", S0);
+	PatternB->SetUniformVariable("uT0", T0);
+	PatternB->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
+	PatternB->SetUniformVariable("uTime", dTime);
+	PatternB->SetUniformVariable("uState", STATE);
+	PatternB->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
+	PatternB->SetUniformVariable("uKa", uKa);
+	PatternB->SetUniformVariable("uKd", uKd);
+	PatternB->SetUniformVariable("uKs", uKs);
+	PatternB->SetUniformVariable("uAnimateFragment", AnimateFragment);
+	PatternB->SetUniformVariable("uAnimateVertex", AnimateVertex);
 }
 
 void
