@@ -45,9 +45,9 @@ main( )
 													to the eye position */
 
 	// vertex shader pattern animation
-	vert.y = vert.y + sin(2 * PI * lastTime);
-	vert.x = vert.x * cos(2 * PI * lastTime);
-	vert.z = vert.z + tan(PI * lastTime) * AMP;
+	//vert.y = vert.y + sin(2 * PI * lastTime);
+	//vert.x = vert.x * cos(2 * PI * lastTime);
+	//vert.z = vert.z + tan(PI * lastTime) * AMP;
 
 	// set vertex ST position for fragment shader
 	vST = vert.xy; // swizzle them bits

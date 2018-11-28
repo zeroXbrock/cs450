@@ -194,6 +194,8 @@ bool	doAnimate = true;		// to animate curves or nah
 bool	pointsVisible = false;	// to draw control points or nah
 bool	linesVisible = false;	// to draw control lines or nah
 bool	trippy = false;			// easter egg; trippy effect (press T)
+int 	AnimateFragment = 1;
+int 	AnimateVertex = 1;
 
 GLSLProgram *Pattern;
 float 	White[] = {1., 1., 1., 1.};
@@ -230,6 +232,7 @@ float 	Unit(float[3], float[3]);
 float 	*Array3(float, float, float);
 float 	*MulArray3(float, float[3]);
 void 	SetMaterial(float, float, float, float);
+void	setShaders();
 
 // main program:
 
@@ -404,14 +407,38 @@ Display( )
 	// enable normalization for glScalef
 	glEnable(GL_NORMALIZE);
 
+	// Pattern manipulation here?
+	setShaders();
+
 	// Do lighting
 	glEnable(GL_LIGHTING);
 
 	// Draw lamp
 	SetPointLight(GL_LIGHT0, 5., 5., 5., 1., 1., 1.);
 
+	// Draw the shape
+	glShadeModel(GL_FLAT);
+	glPushMatrix();
+		SetMaterial(1.0, 1.0, 1.0, 1.);
+		myDisplay(doAnimate, Animate, dTime, DebugOn);
+		//glutSolidSphere(2, 500, 500);
+	glPopMatrix();
+	Pattern->Use(0);
+
+	// disable lighting for basic FX
+	glDisable(GL_LIGHTING);
+
+	// draw node connections
+	glColor3f(1., 1., 1.);
+	drawWires();
+
+	// draw some fuckin stars
+	drawStars();
+
+	
+
 	// use external file to manage display functionality
-	myDisplay(doAnimate, Animate, dTime, DebugOn);
+	//myDisplay(doAnimate, Animate, dTime, DebugOn);
 
 	// be sure the graphics buffer has been sent:
 	// note: be sure to use glFlush( ) here, not glFinish( ) !
@@ -421,6 +448,46 @@ Display( )
 	glFlush();
 }
 
+
+void setShaders(){
+	float S0, T0;
+	float Ds, Dt;
+	float V0, V1, V2;
+	float ColorR, ColorG, ColorB;
+	float SColorR, SColorG, SColorB;
+	float uKa, uKd, uKs, uSize;
+	float pointx, pointy, pointz;
+	float maxdist;
+
+	S0 = 0.;
+	T0 = 1.;
+	ColorR = 0.0;
+	ColorG = 0.5;
+	ColorB = 0.35;
+	SColorR = 1.;
+	SColorG = 1.;
+	SColorB = 1.;
+	uKa = 0.5;
+	uKd = 0.5;
+	uKs = 0.3;
+	pointx = cos(dTime * 18) * 2;
+	pointy = cos(dTime * 13) * 3 - 2;
+	pointz = sin(dTime * 18) * 2;
+	maxdist = 5.;
+
+	Pattern->Use();
+	Pattern->SetUniformVariable("uS0", S0);
+	Pattern->SetUniformVariable("uT0", T0);
+	Pattern->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
+	Pattern->SetUniformVariable("uTime", dTime);
+	Pattern->SetUniformVariable("uState", STATE);
+	Pattern->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
+	Pattern->SetUniformVariable("uKa", uKa);
+	Pattern->SetUniformVariable("uKd", uKd);
+	Pattern->SetUniformVariable("uKs", uKs);
+	Pattern->SetUniformVariable("uAnimateFragment", AnimateFragment);
+	Pattern->SetUniformVariable("uAnimateVertex", AnimateVertex);
+}
 
 void
 DoAxesMenu( int id )
@@ -671,6 +738,30 @@ InitGraphics( )
 	fprintf( stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 
+	// init glew (a window must be open to do this):
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+	{
+		fprintf(stderr, "glewInit Error\n");
+	}
+	else
+		fprintf(stderr, "GLEW initialized OK\n");
+	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
+	// do this *after* opening the window and init'ing glew:
+
+	Pattern = new GLSLProgram();
+	bool valid = Pattern->Create("pattern.vert", "pattern.frag");
+	if (!valid)
+	{
+		fprintf(stderr, "Shader cannot be created!\n");
+		DoMainMenu(QUIT);
+	}
+	else
+	{
+		fprintf(stderr, "Shader created.\n");
+	}
+	Pattern->SetVerbose(false);
 }
 
 

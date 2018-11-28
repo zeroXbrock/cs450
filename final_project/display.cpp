@@ -72,12 +72,6 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
     glColor3f(0.1, 0.6, 1.);
     glutSolidSphere(0.3, 20, 20);
     glTranslatef(0., 1., -2.);
-
-    // draw node connections
-    drawWires();
-
-    // draw some fuckin stars
-    drawStars();
 }
 
 
