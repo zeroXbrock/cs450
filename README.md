@@ -1,4 +1,4 @@
 ### CS450 - Oregon State University
 # Fall 2018
 
-Makefile configured for Mac but you should be able to figure it out.
+Projects not using shaders (p5 and final project) are configured for Mac. Those using shaders are configured for Linux.
