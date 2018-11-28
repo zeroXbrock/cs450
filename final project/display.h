@@ -16,6 +16,6 @@
 void DoRasterString(float, float, float, char *);
 void DoStrokeString(float, float, float, float, char *);
 void myDisplay(int, void(*)(), float);
-void drawBoxes(State, int);
+void drawBoxes(State);
 void drawWires();
 void drawStars();

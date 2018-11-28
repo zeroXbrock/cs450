@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define NUM_BOXES 3
 
 /* non-constant variables */
-float *wireColors[3]; // list to hold wire color vectors
+float *wire_colors[3];               // list to hold wire color vectors
 State STATE;
-Curve CurvesStatic[NUMCURVES]; // if you are creating a pattern of other curves
-Curve Stem;                    // if you are not
+Curve CurvesStatic[NUMCURVES];      // if you are creating a pattern of other curves
+Curve Stem;                         // if you are not
+int lastPick = 0;                       // hold a copy of the pick to compare
 
 
 void initDisplayModule(){
@@ -18,30 +18,46 @@ void initDisplayModule(){
 
 
 // display function for my stuff
-void myDisplay(int doAnimate, void (*Animate)(), float dTime){
+void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = false){
     // control animation w/ KB
     if (doAnimate)
         glutIdleFunc(Animate);
     else
         glutIdleFunc(NULL);
 
-    // control wire colors with time
-    if (dTime < 0.35)
+    // control state based on time
+    if (dTime < 0.35){
         STATE = idle;
-    else if (dTime < 0.5)
+    }
+    else if (dTime < 0.5){
         STATE = receiving;
-    else if (dTime < 0.85)
+    }
+    else if (dTime < 0.85){
         STATE = mining;
-    else if (dTime < 1.)
+    }
+    else if (dTime < 1.){
         STATE = committing;
+        if (pick == lastPick)
+            lastPick++;
+    }
 
     for (int i = 0; i < 3; i++)
     {
-        wireColors[i] = wireColorByState(STATE);
+        wire_colors[i] = wireColorByState(STATE);
     }
 
+    
+
+    if (STATE == idle && lastPick != pick){
+        // shift pick by 1 for each round
+        pick = (pick + 1) % 3;
+        lastPick = pick;
+    }
+
+    
+
     // draw boxes
-    drawBoxes(STATE, 0);
+    drawBoxes(STATE);
 
     // draw text to show the state
     const char *wc = stateName(STATE);
@@ -64,60 +80,9 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime){
 }
 
 
-float** boxColors(State s, int pick){
-    // init 2d array (frickin C man... shoulda used vectors)
-    static float **box_colors = 0;
-    box_colors = new float*[NUM_BOXES];
-    for (int i = 0; i < 3; i++){
-        box_colors[i] = new float[3]; //rgb
-    }
-
-    switch (s)
-    {
-        case idle:
-        case receiving:
-            // all boxes same color
-            for (int i = 0; i < NUM_BOXES; i++){
-                box_colors[i][0] = 0.;
-                box_colors[i][1] = 1.;
-                box_colors[i][2] = 0.5;
-            }
-            break;
-        case mining:
-            // all boxes same color
-            float* c;
-            c = wireColorByState(s);
-            for (int i = 0; i < NUM_BOXES; i++)
-            {
-                box_colors[i][0] = c[0];
-                box_colors[i][1] = c[1];
-                box_colors[i][2] = c[2];
-            }
-            break;
-        case committing:
-            // one box turns yellow
-            box_colors[pick % 3][0] = 0.9;
-            box_colors[pick % 3][1] = 0.7;
-            box_colors[pick % 3][2] = 0.0;
-
-            // the other two turn purple
-            for (int i = 1; i < 3; i++){
-                box_colors[(pick + i) % 3][0] = 0.6;
-                box_colors[(pick + i) % 3][1] = 0.0;
-                box_colors[(pick + i) % 3][2] = 0.7;
-            }
-            break;
-        default:
-            break;
-    }
-
-    return box_colors;
-}
-
-
-void drawBoxes(State s, int pick=0){
+void drawBoxes(State s){
     float** colors;
-    colors = boxColors(s, pick);
+    colors = boxColorsByState(s);
 
     glTranslatef(-3., 0., 0.);
 
@@ -147,13 +112,13 @@ void drawStars(){
 // draw wires connecting nodes to sphere
 void drawWires(){
     placeLeg(&CurvesStatic[1], 0., -1., 2., 0., -0.5, 0.);
-    drawEazierCurve(wireColors[1], CurvesStatic[1]);
+    drawEazierCurve(wire_colors[1], CurvesStatic[1]);
 
     placeLeg(&CurvesStatic[0], 0., -1., 2., -1.5, -0.5, 0.);
-    drawEazierCurve(wireColors[0], CurvesStatic[0]);
+    drawEazierCurve(wire_colors[0], CurvesStatic[0]);
 
     placeLeg(&CurvesStatic[2], 0., -1., 2., 1.5, -0.5, 0.);
-    drawEazierCurve(wireColors[2], CurvesStatic[2]);
+    drawEazierCurve(wire_colors[2], CurvesStatic[2]);
 }
 
 

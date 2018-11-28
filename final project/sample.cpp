@@ -37,7 +37,7 @@
 //		6. The transformations to be reset
 //		7. The program to quit
 //
-//	Author:			Joe Graphics, Brock Smedley
+//	Author:		Brock Smedley, Joe Graphics
 
 // NOTE: There are a lot of good reasons to use const variables instead
 // of #define's.  However, Visual C++ does not allow a const variable
@@ -49,12 +49,12 @@
 #define TRUE 1
 #define FALSE 0
 #define PI 3.14159265
-#define MS_PER_CYCLE 10000
+#define MS_PER_CYCLE 9001
 
 
 // title of these windows:
 
-const char *WINDOWTITLE = { "OpenGL / GLUT Sample -- Brock Smedley" };
+const char *WINDOWTITLE = { "PoA Blockchain Simulation | Brock Smedley" };
 const char *GLUITITLE   = { "User Interface Window" };
 
 
@@ -400,7 +400,7 @@ Display( )
 	}
 	
 	// use external file to manage display functionality
-	myDisplay(doAnimate, Animate, dTime);
+	myDisplay(doAnimate, Animate, dTime, DebugOn);
 
 	// be sure the graphics buffer has been sent:
 	// note: be sure to use glFlush( ) here, not glFinish( ) !
@@ -653,7 +653,7 @@ InitGraphics( )
 	// initialize wire colors list
 	float wc[3] = {0., 0., 0.};
 	for (int i = 0; i < 3; i++){
-		wireColors[i] = wc;
+		wire_colors[i] = wc;
 	}
 
 
