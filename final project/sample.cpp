@@ -847,7 +847,7 @@ Reset( )
 	DepthCueOn = 0;
 	Scale  = 1.0;
 	WhichColor = WHITE;
-	WhichProjection = PERSP;
+	WhichProjection = ORTHO;
 	Xrot = Yrot = 0.;
 }
 
