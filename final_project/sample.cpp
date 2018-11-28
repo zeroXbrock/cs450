@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #ifndef _USE_MATH_DEFINES
     #define _USE_MATH_DEFINES
@@ -13,12 +14,15 @@
 #include "glew.h"
 #endif
 
+#include "glslprogram.h"
+#include "glslprogram.cpp"
 #include "display.cpp"
 
+
 #ifndef GL
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include "GLUT/glut.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "GL/glut.h"
 #endif
 
 //	This is a sample OpenGL / GLUT program
@@ -144,18 +148,6 @@ enum Colors
 	BLACK
 };
 
-char * ColorNames[ ] =
-{
-	"Red",
-	"Yellow",
-	"Green",
-	"Cyan",
-	"Blue",
-	"Magenta",
-	"White",
-	"Black"
-};
-
 
 // the color definitions:
 // this order must match the menu order
@@ -202,6 +194,8 @@ bool	doAnimate = true;		// to animate curves or nah
 bool	pointsVisible = false;	// to draw control points or nah
 bool	linesVisible = false;	// to draw control lines or nah
 bool	trippy = false;			// easter egg; trippy effect (press T)
+int 	AnimateFragment = 1;
+int 	AnimateVertex = 1;
 
 
 // function prototypes:
@@ -228,6 +222,7 @@ void	Resize( int, int );
 void	Visibility( int );
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
+void	setShaders();
 
 // main program:
 
@@ -398,9 +393,41 @@ Display( )
 		glColor3fv( &Colors[WhichColor][0] );
 		glCallList( AxesList );
 	}
-	
-	// use external file to manage display functionality
+
+	// enable normalization for glScalef
+	glEnable(GL_NORMALIZE);
+
+	// Pattern manipulation here?
+	setShaders();
+
+	// Do lighting
+	glEnable(GL_LIGHTING);
+
+	// Draw lamp
+	SetPointLight(GL_LIGHT0, 5., 5., 5., 1., 1., 1.);
+
+	// Draw the shapes
+	glShadeModel(GL_FLAT);
 	myDisplay(doAnimate, Animate, dTime, DebugOn);
+	
+	// stop using shaders
+	PatternA->Use(0);
+	PatternB->Use(0);
+
+	// disable lighting for basic color FX
+	glDisable(GL_LIGHTING);
+
+	// draw node connections
+	//glColor3f(1., 1., 1.);
+	drawWires();
+
+	// draw some fuckin stars
+	drawStars();
+
+	
+
+	// use external file to manage display functionality
+	//myDisplay(doAnimate, Animate, dTime, DebugOn);
 
 	// be sure the graphics buffer has been sent:
 	// note: be sure to use glFlush( ) here, not glFinish( ) !
@@ -410,6 +437,61 @@ Display( )
 	glFlush();
 }
 
+
+void setShaders(){
+	float S0, T0;
+	float Ds, Dt;
+	float V0, V1, V2;
+	float ColorR, ColorG, ColorB;
+	float SColorR, SColorG, SColorB;
+	float uKa, uKd, uKs, uSize;
+	float pointx, pointy, pointz;
+	float maxdist;
+
+	S0 = 0.;
+	T0 = 1.;
+
+	ColorR = 0.0;
+	ColorG = 0.5;
+	ColorB = 0.35;
+	if (DebugOn)
+		printf("R: %f\tG: %f\tB: %f\n\n", ColorR, ColorG, ColorB);
+	SColorR = 1.;
+	SColorG = 1.;
+	SColorB = 1.;
+	uKa = 0.5;
+	uKd = 0.5;
+	uKs = 0.3;
+	pointx = cos(dTime * 18) * 2;
+	pointy = cos(dTime * 13) * 3 - 2;
+	pointz = sin(dTime * 18) * 2;
+	maxdist = 5.;
+
+	//PatternA->Use();
+	PatternA->SetUniformVariable("uS0", S0);
+	PatternA->SetUniformVariable("uT0", T0);
+	PatternA->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
+	PatternA->SetUniformVariable("uTime", dTime);
+	PatternA->SetUniformVariable("uState", STATE);
+	PatternA->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
+	PatternA->SetUniformVariable("uKa", uKa);
+	PatternA->SetUniformVariable("uKd", uKd);
+	PatternA->SetUniformVariable("uKs", uKs);
+	PatternA->SetUniformVariable("uAnimateFragment", AnimateFragment);
+	PatternA->SetUniformVariable("uAnimateVertex", AnimateVertex);
+
+	PatternB->SetUniformVariable("uS0", S0);
+	PatternB->SetUniformVariable("uT0", T0);
+	PatternB->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
+	PatternB->SetUniformVariable("uTime", dTime);
+	PatternB->SetUniformVariable("uState", STATE);
+	PatternB->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
+	PatternB->SetUniformVariable("uKa", uKa);
+	PatternB->SetUniformVariable("uKd", uKd);
+	PatternB->SetUniformVariable("uKs", uKs);
+	PatternB->SetUniformVariable("uAnimateFragment", AnimateFragment);
+	PatternB->SetUniformVariable("uAnimateVertex", AnimateVertex);
+}
 
 void
 DoAxesMenu( int id )
@@ -532,14 +614,7 @@ void
 InitMenus( )
 {
 	glutSetWindow( MainWindow );
-
-	int numColors = sizeof( Colors ) / ( 3*sizeof(int) );
-	int colormenu = glutCreateMenu( DoColorMenu );
-	for( int i = 0; i < numColors; i++ )
-	{
-		glutAddMenuEntry( ColorNames[i], i );
-	}
-
+	
 	int axesmenu = glutCreateMenu( DoAxesMenu );
 	glutAddMenuEntry( "Off",  0 );
 	glutAddMenuEntry( "On",   1 );
@@ -566,7 +641,6 @@ InitMenus( )
 
 	int mainmenu = glutCreateMenu( DoMainMenu );
 	glutAddSubMenu(   "Axes",          axesmenu);
-	glutAddSubMenu(   "Colors",        colormenu);
 	glutAddSubMenu(   "Depth Buffer",  depthbuffermenu);
 	glutAddSubMenu(   "Depth Fighting",depthfightingmenu);
 	glutAddSubMenu(   "Depth Cue",     depthcuemenu);
@@ -668,6 +742,19 @@ InitGraphics( )
 	fprintf( stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 
+	// init glew (a window must be open to do this):
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+	{
+		fprintf(stderr, "glewInit Error\n");
+	}
+	else
+		fprintf(stderr, "GLEW initialized OK\n");
+	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
+	// do this *after* opening the window and init'ing glew:
+	if (!initShaderModule())
+		DoMainMenu(QUIT);
 }
 
 
@@ -695,6 +782,7 @@ InitLists( )
 }
 
 
+/// BORING STUFF PAST HERE ====================================================
 // the keyboard callback:
 
 void
