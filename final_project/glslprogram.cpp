@@ -638,7 +638,7 @@ void
 GLSLProgram::SetUniformVariable( char* name, float vals[3] )
 {
 	int loc;
-	fprintf( stderr, "Found a 3-element array\n" );
+	//fprintf( stderr, "Found a 3-element array\n" );
 
 	if( ( loc = GetUniformLocation( name ) )  >= 0 )
 	{

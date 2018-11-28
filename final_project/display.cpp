@@ -11,8 +11,9 @@ State STATE;
 Curve CurvesStatic[NUMCURVES];      // if you are creating a pattern of other curves
 Curve Stem;                         // if you are not
 int lastPick = 0;                   // hold a copy of the pick to compare
-GLSLProgram *Pattern;
 
+GLSLProgram *Pattern;
+float White[] = {1., 1., 1., 1.};
 
 bool initShaderModule(){
     Pattern = new GLSLProgram();
@@ -69,9 +70,8 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
         lastPick = pick;
     }
 
-    //Pattern->Use(0);
     // draw boxes
-    drawBoxes(STATE);
+    drawBoxes();
 
     // draw text to show the state
     const char *wc = stateName(STATE);
@@ -90,17 +90,20 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
 }
 
 
-void drawBoxes(State s){
-    float** colors;
-    colors = boxColorsByState(s);
-
+void drawBoxes(){
     glTranslatef(-3., 0., 0.);
 
     for (int i = 0; i < 3; i++)
     {
+        Pattern->Use();
+
+        // draw node
         glTranslatef(1.5, 0., 0.);
-        glColor3f(colors[i][0], colors[i][1], colors[i][2]);
         glutSolidCube(1.);
+
+        // stop using pattern for blocks
+        Pattern->Use(0);
+
         // draw blocks on chain for each node
         drawBlocks();
     }
@@ -174,4 +177,93 @@ void DoStrokeString(float x, float y, float z, float ht, char *s)
         glutStrokeCharacter(GLUT_STROKE_ROMAN, c);
     }
     glPopMatrix();
+}
+
+/// SHADER MATH =======================
+
+float Dot(float v1[3], float v2[3])
+{
+    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+}
+
+void Cross(float v1[3], float v2[3], float vout[3])
+{
+    float tmp[3];
+    tmp[0] = v1[1] * v2[2] - v2[1] * v1[2];
+    tmp[1] = v2[0] * v1[2] - v1[0] * v2[2];
+    tmp[2] = v1[0] * v2[1] - v2[0] * v1[1];
+    vout[0] = tmp[0];
+    vout[1] = tmp[1];
+    vout[2] = tmp[2];
+}
+
+float Unit(float vin[3], float vout[3])
+{
+    float dist = vin[0] * vin[0] + vin[1] * vin[1] + vin[2] * vin[2];
+    if (dist > 0.0)
+    {
+        dist = sqrt(dist);
+        vout[0] = vin[0] / dist;
+        vout[1] = vin[1] / dist;
+        vout[2] = vin[2] / dist;
+    }
+    else
+    {
+        vout[0] = vin[0];
+        vout[1] = vin[1];
+        vout[2] = vin[2];
+    }
+    return dist;
+}
+
+// utility to create an array from 3 separate values:
+float *
+Array3(float a, float b, float c)
+{
+    static float array[4];
+    array[0] = a;
+    array[1] = b;
+    array[2] = c;
+    array[3] = 1.;
+    return array;
+}
+
+// utility to create an array from a multiplier and an array:
+float *
+MulArray3(float factor, float array0[3])
+{
+    static float array[4];
+    array[0] = factor * array0[0];
+    array[1] = factor * array0[1];
+    array[2] = factor * array0[2];
+    array[3] = 1.;
+    return array;
+}
+
+// sets current material parameters
+void SetMaterial(float r, float g, float b, float shininess)
+{
+    glMaterialfv(GL_BACK, GL_EMISSION, Array3(0., 0., 0.));
+    glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(.4f, White));
+    glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., White));
+    glMaterialfv(GL_BACK, GL_SPECULAR, Array3(0., 0., 0.));
+    glMaterialf(GL_BACK, GL_SHININESS, 2.f);
+    glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));
+    glMaterialfv(GL_FRONT, GL_AMBIENT, Array3(r, g, b));
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, Array3(r, g, b));
+    glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(.8f, White));
+    glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+}
+
+// get some lamp
+void SetPointLight(int ilight, float x, float y, float z, float r, float g, float b)
+{
+    glLightfv(ilight, GL_POSITION, Array3(x, y, z));
+    glLightfv(ilight, GL_AMBIENT, Array3(0., 0., 0.));
+    glLightfv(ilight, GL_DIFFUSE, Array3(r, g, b));
+    glLightfv(ilight, GL_SPECULAR, Array3(r, g, b));
+    glLightf(ilight, GL_CONSTANT_ATTENUATION, 1.);
+    glLightf(ilight, GL_LINEAR_ATTENUATION, 0.5);
+    glLightf(ilight, GL_QUADRATIC_ATTENUATION, 0.);
+    glEnable(ilight);
 }

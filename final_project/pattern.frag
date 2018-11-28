@@ -40,10 +40,13 @@ main( )
 	// fragment effect processing here
 	float waves = sin(lastTime * PI);
 	float cwaves = cos(lastTime * PI);
-	if (vST.t < sin(W * (vST.s * waves * 2)))
+
+	if (vST.t < sin(W * (vST.s * waves * 2))){
         myColor = vec3( 1., waves/2, 0. );
-	else
+	}
+	else{
 		myColor = vec3( uColor.x, uColor.y, waves/2);
+	}
 
 	// set ambient color
 	vec3 ambient = uKa * myColor;
