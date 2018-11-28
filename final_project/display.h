@@ -1,8 +1,8 @@
 #ifndef GL
-#define GL 1
-    #include <OpenGL/gl.h>
-    #include <OpenGL/glu.h>
-    #include "GLUT/glut.h"
+#define GL
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+    #include "GL/glut.h"
 #endif
 
 #ifndef _USE_MATH_DEFINES

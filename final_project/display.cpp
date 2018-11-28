@@ -9,7 +9,7 @@ float *wire_color[3];               // list to hold wire color vectors
 State STATE;
 Curve CurvesStatic[NUMCURVES];      // if you are creating a pattern of other curves
 Curve Stem;                         // if you are not
-int lastPick = 0;                       // hold a copy of the pick to compare
+int lastPick = 0;                   // hold a copy of the pick to compare
 
 
 void initDisplayModule(){
