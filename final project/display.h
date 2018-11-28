@@ -18,4 +18,5 @@ void DoStrokeString(float, float, float, float, char *);
 void myDisplay(int, void(*)(), float);
 void drawBoxes(State);
 void drawWires();
+void drawBlocks();
 void drawStars();

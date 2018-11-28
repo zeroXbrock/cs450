@@ -49,7 +49,7 @@
 #define TRUE 1
 #define FALSE 0
 #define PI 3.14159265
-#define MS_PER_CYCLE 9001
+#define MS_PER_CYCLE 10000
 
 
 // title of these windows:

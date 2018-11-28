@@ -61,9 +61,11 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
     // draw text to show the state
     const char *wc = stateName(STATE);
     float dx = len(stateName(STATE)) * -0.08;
-    glTranslatef(dx, 0., 0.);
+    float dy = -3.5;
+    float dz = 1.;
+    glTranslatef(dx, dy, dz);
     DoStrokeString(0., 2., 0., 0.4, stateName(STATE));
-    glTranslatef(-dx, 0., 0.);
+    glTranslatef(-dx, -dy, -dz);
 
     // represent the internet as a sphere
     glTranslatef(0., -1., 2.);
@@ -90,6 +92,8 @@ void drawBoxes(State s){
         glTranslatef(1.5, 0., 0.);
         glColor3f(colors[i][0], colors[i][1], colors[i][2]);
         glutSolidCube(1.);
+        // draw blocks on chain for each node
+        drawBlocks();
     }
     glTranslatef(-1.5, 0., 0.);
 }
@@ -106,6 +110,19 @@ void drawStars(){
         glutSolidSphere(0.01, 20, 10);
         glTranslatef(-d, -e, -f);
     }
+}
+
+void drawBlocks(){
+    // position above node preemptively (looped translate will move it more +Y)
+    glTranslatef(0., 0.6, 0.);
+
+    // draw proper number of blocks
+    for (int i = 0; i < pick+1; i++){
+        glColor3f(1., 0.5, 0.05);
+        glTranslatef(0., 0.6, 0.);
+        glutSolidCube(0.5);
+    }
+    glTranslatef(0., -1.2 - (0.6 * pick), 0.);
 }
 
 
