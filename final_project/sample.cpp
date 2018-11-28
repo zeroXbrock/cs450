@@ -442,7 +442,8 @@ void setShaders(){
 	float S0, T0;
 	float Ds, Dt;
 	float V0, V1, V2;
-	float ColorR, ColorG, ColorB;
+	float ColorRa, ColorGa, ColorBa;
+	float ColorRb, ColorGb, ColorBb;
 	float SColorR, SColorG, SColorB;
 	float uKa, uKd, uKs, uSize;
 	float pointx, pointy, pointz;
@@ -451,11 +452,12 @@ void setShaders(){
 	S0 = 0.;
 	T0 = 1.;
 
-	ColorR = 0.0;
-	ColorG = 0.5;
-	ColorB = 0.35;
-	if (DebugOn)
-		printf("R: %f\tG: %f\tB: %f\n\n", ColorR, ColorG, ColorB);
+	ColorRa = 0.0;
+	ColorGa = 0.5;
+	ColorBa = 0.35;
+	ColorRb = 0.0;
+	ColorGb = 0.8;
+	ColorBb = 0.4;
 	SColorR = 1.;
 	SColorG = 1.;
 	SColorB = 1.;
@@ -470,7 +472,7 @@ void setShaders(){
 	//PatternA->Use();
 	PatternA->SetUniformVariable("uS0", S0);
 	PatternA->SetUniformVariable("uT0", T0);
-	PatternA->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
+	PatternA->SetUniformVariable("uColor", ColorRa, ColorGa, ColorBa);
 	PatternA->SetUniformVariable("uTime", dTime);
 	PatternA->SetUniformVariable("uState", STATE);
 	PatternA->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
@@ -482,7 +484,7 @@ void setShaders(){
 
 	PatternB->SetUniformVariable("uS0", S0);
 	PatternB->SetUniformVariable("uT0", T0);
-	PatternB->SetUniformVariable("uColor", ColorR, ColorG, ColorB);
+	PatternB->SetUniformVariable("uColor", ColorRb, ColorGb, ColorBb);
 	PatternB->SetUniformVariable("uTime", dTime);
 	PatternB->SetUniformVariable("uState", STATE);
 	PatternB->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);

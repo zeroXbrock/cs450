@@ -1,5 +1,7 @@
 #version 130
 
+/* PatternB: Effect of "committing" state */
+
 // variables from the heavens
 uniform float uKa, uKd, uKs;		// coefficients of each type of lighting
 uniform float uS0, uT0;				// home coordinates; bounding box for pattern
@@ -47,10 +49,12 @@ main( )
 
 	float waves = sin(lastTime * PI);
 	float cwaves = cos(lastTime * PI);
-	if (vST.t < sin(W * (vST.s * waves * 2)))
-        myColor = vec3( 1., 1., waves/2.);
-	else
-		myColor = vec3( uColor.x, waves/2, uColor.z);
+	if (vST.t < sin(W * (vST.t * waves * 2))){
+        myColor = vec3( uColor.x, uColor.y, waves/2);
+	}
+	else{
+		myColor = vec3( uColor.x, waves * 2, 0.2 );
+	}
 
 	// set ambient color
 	vec3 ambient = uKa * myColor;
