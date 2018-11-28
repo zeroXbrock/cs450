@@ -1,22 +1,22 @@
 #include "blockstate.h"
 
-enum state
+enum State
 {
     idle = 0,
-    received = 1,
+    receiving = 1,
     mining = 2,
     committing = 3
 };
 
-char* stateName(state s){
+char* stateName(State s){
     static char *c = "";
     switch (s)
     {
         case idle:
             c = "IDLE";
             break;
-        case received:
-            c = "TX RECEIVED";
+        case receiving:
+            c = "RECEIVING TX";
             break;
         case mining:
             c = "MINING";
@@ -29,7 +29,7 @@ char* stateName(state s){
 }
 
 
-float* wireColorByState(state s){
+float* wireColorByState(State s){
     static float c[3] = {1., 1., 1.};
     switch(s){
         case idle:
@@ -37,9 +37,9 @@ float* wireColorByState(state s){
             c[1] = 0.2;
             c[2] = 0.8;
             break;
-        case received:
-            c[0] = 0.5;
-            c[1] = 0.5;
+        case receiving:
+            c[0] = 0.8;
+            c[1] = 0.75;
             c[2] = 0.1;
             break;
         case mining:

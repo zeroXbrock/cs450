@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#ifndef _USE_MATH_DEFINES
+    #define _USE_MATH_DEFINES
+    #include <math.h>
+#endif
 
 #ifdef WIN32
 #include <windows.h>
@@ -11,13 +13,13 @@
 #include "glew.h"
 #endif
 
+#include "display.cpp"
+
+#ifndef GL
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include "GLUT/glut.h"
-
-#include "bezier.cpp"
-#include "blockstate.cpp"
-
+#endif
 
 //	This is a sample OpenGL / GLUT program
 //
@@ -184,7 +186,6 @@ const GLfloat FOGEND      = { 4. };
 
 int		ActiveButton;			// current button that is down
 GLuint	AxesList;				// list to hold the axes	
-GLuint	StaticBoxesList;		// list to hold the static boxes
 int		AxesOn;					// != 0 means to draw the axes
 int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
@@ -196,16 +197,12 @@ int		WhichColor;				// index into Colors[ ]
 int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
-Curve Curves[NUMCURVES]; 		// if you are creating a pattern of curves
-Curve CurvesStatic[NUMCURVES];	// if you are creating a pattern of other curves
-Curve Stem;						// if you are not
 float 	dTime;					// global time variable; sawtooth oscillation from 0-1
 bool	doAnimate = true;		// to animate curves or nah
 bool	pointsVisible = false;	// to draw control points or nah
 bool	linesVisible = false;	// to draw control lines or nah
 bool	trippy = false;			// easter egg; trippy effect (press T)
-float*	wireColors[3];			// list to hold wire color vectors
-state 	STATE;
+
 
 // function prototypes:
 
@@ -219,8 +216,6 @@ void	DoDepthMenu( int );
 void	DoDebugMenu( int );
 void	DoMainMenu( int );
 void	DoProjectMenu( int );
-void	DoRasterString( float, float, float, char * );
-void	DoStrokeString( float, float, float, float, char * );
 float	ElapsedSeconds( );
 void	InitGraphics( );
 void	InitLists( );
@@ -231,7 +226,6 @@ void	MouseMotion( int, int );
 void	Reset( );
 void	Resize( int, int );
 void	Visibility( int );
-
 void	Axes( float );
 void	HsvRgb( float[3], float [3] );
 
@@ -404,52 +398,9 @@ Display( )
 		glColor3fv( &Colors[WhichColor][0] );
 		glCallList( AxesList );
 	}
-
-	glCallList(StaticBoxesList);
-
-	// control animation w/ KB
-	if (doAnimate)
-		glutIdleFunc(Animate);
-	else
-		glutIdleFunc(NULL);
-
-
-	// control wire colors with time
-	if (dTime < 0.35)
-		STATE = idle;
-	else if (dTime < 0.5)
-		STATE = received;
-	else if (dTime < 0.75)
-		STATE = mining;
-	else if (dTime < 1.)
-		STATE = committing;
-		
-	for (int i = 0; i < 3; i++){
-		wireColors[i] = wireColorByState(STATE);
-	}
-
-	// draw text to show the state
-	const char *wc = stateName(STATE);
-	float dx = len(stateName(STATE)) * -0.08;
-	glTranslatef(dx, 0., 0.);
-	DoStrokeString(0., 2., 0., 0.4, stateName(STATE));
-	glTranslatef(-dx, 0., 0.);
-
-	// represent the internet as a sphere
-	glTranslatef(0., -1., 2.);
-	glColor3f(0.1, 0.6, 1.);
-	glutSolidSphere(0.3, 20, 20);
-	glTranslatef(0., 1., -2.);
-
-	// draw wires between nodes
-	placeLeg(&Stem, 0., -1., 2., 0., -0.5, 0.);
-	drawEazierCurve(wireColors[1], Stem);
-
-	placeLeg(&Stem, 0., -1., 2., -1.5, -0.5, 0.);
-	drawEazierCurve(wireColors[0], Stem);
-
-	placeLeg(&Stem, 0., -1., 2., 1.5, -0.5, 0.);
-	drawEazierCurve(wireColors[2], Stem);
+	
+	// use external file to manage display functionality
+	myDisplay(doAnimate, Animate, dTime);
 
 	// be sure the graphics buffer has been sent:
 	// note: be sure to use glFlush( ) here, not glFinish( ) !
@@ -557,39 +508,6 @@ DoProjectMenu( int id )
 
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
-}
-
-
-// use glut to display a string of characters using a raster font:
-
-void
-DoRasterString( float x, float y, float z, char *s )
-{
-	glRasterPos3f( (GLfloat)x, (GLfloat)y, (GLfloat)z );
-
-	char c;			// one character to print
-	for( ; ( c = *s ) != '\0'; s++ )
-	{
-		glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, c );
-	}
-}
-
-
-// use glut to display a string of characters using a stroke font:
-
-void
-DoStrokeString( float x, float y, float z, float ht, char *s )
-{
-	glPushMatrix( );
-		glTranslatef( (GLfloat)x, (GLfloat)y, (GLfloat)z );
-		float sf = ht / ( 119.05f + 33.33f );
-		glScalef( (GLfloat)sf, (GLfloat)sf, (GLfloat)sf );
-		char c;			// one character to print
-		for( ; ( c = *s ) != '\0'; s++ )
-		{
-			glutStrokeCharacter( GLUT_STROKE_ROMAN, c );
-		}
-	glPopMatrix( );
 }
 
 
@@ -774,19 +692,6 @@ InitLists( )
 			Axes( 1.5 );
 		glLineWidth( 1. );
 	glEndList( );
-
-
-	// create static boxes
-	StaticBoxesList = glGenLists(1);
-	glNewList(StaticBoxesList, GL_COMPILE);
-		glTranslatef(-3., 0., 0.);
-		for (int i = 0; i < 3; i++){
-			glTranslatef(1.5, 0., 0.);
-			glColor3f(0., 1.0, 0.5);
-			glutSolidCube(1.);
-		}
-		glTranslatef(-1.5, 0., 0.);
-	glEndList();
 }
 
 
