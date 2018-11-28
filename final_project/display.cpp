@@ -77,18 +77,21 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
     // draw boxes
     drawBoxes();
 	
-    // text and sphere can have their own matrixes
+    // text and sphere can have their own matrices
     glPushMatrix();
         SetMaterial(1.0, 1.0, 1.0, 1.);
+        PatternB->Use();
+
         // draw text to show the state
         const char *wc = stateName(STATE);
         float dx = len(stateName(STATE)) * -0.08;
-        float dy = -3.5;
+        float dy = -2.5;
         float dz = 1.;
-        glTranslatef(dx, dy, dz);
-        DoStrokeString(0., 2., 0., 0.4, stateName(STATE));
+        DoStrokeString(dx, dy, dz, 0.4, stateName(STATE));
         glTranslatef(-dx, -dy, -dz);
-
+        PatternB->Use(0);
+    glPopMatrix();
+    glPushMatrix();
         SetMaterial(0.2, 0.6, 1.0, 1.);
         // represent the internet as a sphere
         glTranslatef(0., -1., 2.);

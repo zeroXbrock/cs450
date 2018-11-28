@@ -404,7 +404,7 @@ Display( )
 	glEnable(GL_LIGHTING);
 
 	// Draw lamp
-	SetPointLight(GL_LIGHT0, 5., 5., 5., 1., 1., 1.);
+	SetPointLight(GL_LIGHT0, 2., 2., 5., 1., 1., 1.);
 
 	// Draw the shapes
 	glShadeModel(GL_FLAT);

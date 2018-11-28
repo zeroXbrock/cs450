@@ -30,3 +30,4 @@
 # ignore stupid mac shit
 *.DS_Store
 *.m4a
+.vscode/c_cpp_properties.json
