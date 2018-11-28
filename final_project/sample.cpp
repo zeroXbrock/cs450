@@ -196,8 +196,6 @@ bool	linesVisible = false;	// to draw control lines or nah
 bool	trippy = false;			// easter egg; trippy effect (press T)
 int 	AnimateFragment = 1;
 int 	AnimateVertex = 1;
-
-GLSLProgram *Pattern;
 float 	White[] = {1., 1., 1., 1.};
 
 // function prototypes:
@@ -749,19 +747,8 @@ InitGraphics( )
 	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
 	// do this *after* opening the window and init'ing glew:
-
-	Pattern = new GLSLProgram();
-	bool valid = Pattern->Create("pattern.vert", "pattern.frag");
-	if (!valid)
-	{
-		fprintf(stderr, "Shader cannot be created!\n");
+	if (!initShaderModule())
 		DoMainMenu(QUIT);
-	}
-	else
-	{
-		fprintf(stderr, "Shader created.\n");
-	}
-	Pattern->SetVerbose(false);
 }
 
 

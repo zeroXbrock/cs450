@@ -1,5 +1,6 @@
 #include "display.h"
 #include "bezier.cpp"
+#include "glslprogram.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -10,10 +11,23 @@ State STATE;
 Curve CurvesStatic[NUMCURVES];      // if you are creating a pattern of other curves
 Curve Stem;                         // if you are not
 int lastPick = 0;                   // hold a copy of the pick to compare
+GLSLProgram *Pattern;
 
 
-void initDisplayModule(){
-    return;
+bool initShaderModule(){
+    Pattern = new GLSLProgram();
+    bool valid = Pattern->Create("pattern.vert", "pattern.frag");
+    if (!valid)
+    {
+        fprintf(stderr, "Shader cannot be created!\n");
+        return false;
+    }
+    else
+    {
+        fprintf(stderr, "Shader created.\n");
+    }
+    Pattern->SetVerbose(false);
+    return true;
 }
 
 
@@ -55,6 +69,7 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
         lastPick = pick;
     }
 
+    //Pattern->Use(0);
     // draw boxes
     drawBoxes(STATE);
 

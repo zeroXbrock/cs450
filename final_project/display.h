@@ -20,3 +20,4 @@ void drawBoxes(State);
 void drawWires();
 void drawBlocks();
 void drawStars();
+bool initShaderModule();
