@@ -1,7 +1,7 @@
 #include "bezier.h"
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include "GLUT/glut.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "GL/glut.h"
 
 
 float cubicPoint(float t, float p0, float p1, float p2, float p3){

@@ -1,5 +1,5 @@
 sample:		sample.cpp bezier.cpp bezier.h blockstate.cpp blockstate.h display.cpp display.h
-	g++ -o sample  sample.cpp   -lm -framework OpenGL -framework GLUT -Wno-deprecated-declarations -Wno-c++11-compat-deprecated-writable-strings
+	g++ sample.cpp -o sample -lglut -lGL -lGLU -lGLEW -lm
 
 clean:
 	rm ./sample
