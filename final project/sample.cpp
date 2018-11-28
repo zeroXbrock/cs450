@@ -653,7 +653,7 @@ InitGraphics( )
 	// initialize wire colors list
 	float wc[3] = {0., 0., 0.};
 	for (int i = 0; i < 3; i++){
-		wire_colors[i] = wc;
+		wire_color[i] = wc;
 	}
 
 

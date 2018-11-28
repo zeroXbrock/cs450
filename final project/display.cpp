@@ -5,7 +5,7 @@
 
 
 /* non-constant variables */
-float *wire_colors[3];               // list to hold wire color vectors
+float *wire_color[3];               // list to hold wire color vectors
 State STATE;
 Curve CurvesStatic[NUMCURVES];      // if you are creating a pattern of other curves
 Curve Stem;                         // if you are not
@@ -37,24 +37,23 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
     }
     else if (dTime < 1.){
         STATE = committing;
+        // change lastPick to (later) shift committing node
         if (pick == lastPick)
             lastPick++;
     }
 
+    // set color of all wires
     for (int i = 0; i < 3; i++)
     {
-        wire_colors[i] = wireColorByState(STATE);
+        wire_color[i] = wireColorByState(STATE);
+        /* NOTE: all wires inherently have the same color */
     }
 
-    
-
+    // shift committing node if not already done
     if (STATE == idle && lastPick != pick){
-        // shift pick by 1 for each round
         pick = (pick + 1) % 3;
         lastPick = pick;
     }
-
-    
 
     // draw boxes
     drawBoxes(STATE);
@@ -95,6 +94,7 @@ void drawBoxes(State s){
     glTranslatef(-1.5, 0., 0.);
 }
 
+
 void drawStars(){
     for (int i = 0; i < 100; i++){
         float d = (float)((rand() % 1000) - 500) / 100.0 + 2;
@@ -112,18 +112,17 @@ void drawStars(){
 // draw wires connecting nodes to sphere
 void drawWires(){
     placeLeg(&CurvesStatic[1], 0., -1., 2., 0., -0.5, 0.);
-    drawEazierCurve(wire_colors[1], CurvesStatic[1]);
+    drawEazierCurve(wire_color[1], CurvesStatic[1]);
 
     placeLeg(&CurvesStatic[0], 0., -1., 2., -1.5, -0.5, 0.);
-    drawEazierCurve(wire_colors[0], CurvesStatic[0]);
+    drawEazierCurve(wire_color[0], CurvesStatic[0]);
 
     placeLeg(&CurvesStatic[2], 0., -1., 2., 1.5, -0.5, 0.);
-    drawEazierCurve(wire_colors[2], CurvesStatic[2]);
+    drawEazierCurve(wire_color[2], CurvesStatic[2]);
 }
 
 
 // use glut to display a string of characters using a raster font:
-
 void DoRasterString(float x, float y, float z, char *s)
 {
     glRasterPos3f((GLfloat)x, (GLfloat)y, (GLfloat)z);
@@ -135,8 +134,8 @@ void DoRasterString(float x, float y, float z, char *s)
     }
 }
 
-// use glut to display a string of characters using a stroke font:
 
+// use glut to display a string of characters using a stroke font:
 void DoStrokeString(float x, float y, float z, float ht, char *s)
 {
     glPushMatrix();
