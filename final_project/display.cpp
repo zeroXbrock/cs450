@@ -14,14 +14,17 @@ int lastPick = 0;                   // hold a copy of the pick to compare
 
 GLSLProgram *PatternA;
 GLSLProgram *PatternB;
+GLSLProgram *PatternC;
 float White[] = {1., 1., 1., 1.};
 
 bool initShaderModule(){
     PatternA = new GLSLProgram();
     PatternB = new GLSLProgram();
+    PatternC = new GLSLProgram();
     bool valid = PatternA->Create("pattern.vert", "pattern.frag");
     bool valid2 = PatternB->Create("pattern.vert", "pattern.2.frag");
-    if (!valid || !valid2)
+    bool valid3 = PatternC->Create("pattern.vert", "pattern.3.frag");
+    if (!valid || !valid2 || !valid3)
     {
         fprintf(stderr, "Shader cannot be created!\n");
         return false;
@@ -32,6 +35,7 @@ bool initShaderModule(){
     }
     PatternA->SetVerbose(false);
     PatternB->SetVerbose(false);
+    PatternC->SetVerbose(false);
     return true;
 }
 
@@ -77,11 +81,10 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
     // draw boxes
     drawBoxes();
 	
-    // text and sphere can have their own matrices
+    // text and sphere can have their own matrixes
     glPushMatrix();
         SetMaterial(1.0, 1.0, 1.0, 1.);
         PatternB->Use();
-
         // draw text to show the state
         const char *wc = stateName(STATE);
         float dx = len(stateName(STATE)) * -0.08;
@@ -117,6 +120,13 @@ void drawBoxes(){
                 bm[2] =  1.;
                 bm[3] =  1.;
             }
+            else if (STATE == mining){
+                PatternC->Use();
+                bm[0] =  1.;
+                bm[1] =  1.;
+                bm[2] =  1.;
+                bm[3] =  1.;
+            }
             else{
                 PatternA->Use();
                 bm[0] =  0.1;
@@ -132,6 +142,7 @@ void drawBoxes(){
             // stop using pattern for blocks
             PatternA->Use(0);
             PatternB->Use(0);
+            PatternC->Use(0);
 
             SetMaterial(bm[0], bm[1], bm[2], bm[3]);
             drawBlocks();

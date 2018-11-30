@@ -444,6 +444,7 @@ void setShaders(){
 	float V0, V1, V2;
 	float ColorRa, ColorGa, ColorBa;
 	float ColorRb, ColorGb, ColorBb;
+	float ColorRc, ColorGc, ColorBc;
 	float SColorR, SColorG, SColorB;
 	float uKa, uKd, uKs, uSize;
 	float pointx, pointy, pointz;
@@ -458,6 +459,9 @@ void setShaders(){
 	ColorRb = 0.0;
 	ColorGb = 0.8;
 	ColorBb = 0.4;
+	ColorRc = 0.8;
+	ColorGc = 0.8;
+	ColorBc = 0.0;
 	SColorR = 1.;
 	SColorG = 1.;
 	SColorB = 1.;
@@ -468,6 +472,7 @@ void setShaders(){
 	pointy = cos(dTime * 13) * 3 - 2;
 	pointz = sin(dTime * 18) * 2;
 	maxdist = 5.;
+	uSize = 1.;
 
 	//PatternA->Use();
 	PatternA->SetUniformVariable("uS0", S0);
@@ -476,6 +481,7 @@ void setShaders(){
 	PatternA->SetUniformVariable("uTime", dTime);
 	PatternA->SetUniformVariable("uState", STATE);
 	PatternA->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
+	PatternA->SetUniformVariable("uSize", uSize);
 	PatternA->SetUniformVariable("uKa", uKa);
 	PatternA->SetUniformVariable("uKd", uKd);
 	PatternA->SetUniformVariable("uKs", uKs);
@@ -487,12 +493,26 @@ void setShaders(){
 	PatternB->SetUniformVariable("uColor", ColorRb, ColorGb, ColorBb);
 	PatternB->SetUniformVariable("uTime", dTime);
 	PatternB->SetUniformVariable("uState", STATE);
+	PatternB->SetUniformVariable("uSize", uSize);
 	PatternB->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
 	PatternB->SetUniformVariable("uKa", uKa);
 	PatternB->SetUniformVariable("uKd", uKd);
 	PatternB->SetUniformVariable("uKs", uKs);
 	PatternB->SetUniformVariable("uAnimateFragment", AnimateFragment);
 	PatternB->SetUniformVariable("uAnimateVertex", AnimateVertex);
+
+	PatternC->SetUniformVariable("uS0", S0);
+	PatternC->SetUniformVariable("uT0", T0);
+	PatternC->SetUniformVariable("uColor", ColorRb, ColorGb, ColorBb);
+	PatternC->SetUniformVariable("uTime", dTime);
+	PatternC->SetUniformVariable("uState", STATE);
+	PatternC->SetUniformVariable("uSize", uSize);
+	PatternC->SetUniformVariable("uSpecularColor", SColorR, SColorG, SColorB);
+	PatternC->SetUniformVariable("uKa", uKa);
+	PatternC->SetUniformVariable("uKd", uKd);
+	PatternC->SetUniformVariable("uKs", uKs);
+	PatternC->SetUniformVariable("uAnimateFragment", AnimateFragment);
+	PatternC->SetUniformVariable("uAnimateVertex", AnimateVertex);
 }
 
 void
