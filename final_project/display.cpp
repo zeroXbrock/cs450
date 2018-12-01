@@ -17,7 +17,13 @@ GLSLProgram *PatternB;
 GLSLProgram *PatternC;
 float White[] = {1., 1., 1., 1.};
 
-bool initShaderModule(){
+// prototypes
+void drawIncomingTx(float);
+void drawBlockWire(float, float, float);
+
+    // setup
+    bool initShaderModule()
+{
     PatternA = new GLSLProgram();
     PatternB = new GLSLProgram();
     PatternC = new GLSLProgram();
@@ -40,7 +46,7 @@ bool initShaderModule(){
 }
 
 
-// display function for my stuff
+// encapsulated display function for my stuff
 void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = false){
     // control animation w/ KB
     if (doAnimate)
@@ -80,7 +86,10 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
 
     // draw boxes
     drawBoxes();
-	
+
+    // draw incoming tx
+    drawIncomingTx(dTime);
+
     // text and sphere can have their own matrixes
     glPushMatrix();
         SetMaterial(1.0, 1.0, 1.0, 1.);
@@ -106,7 +115,7 @@ void myDisplay(int doAnimate, void (*Animate)(), float dTime, bool DebugOn = fal
 
 void drawBoxes(){
     glTranslatef(-3., 0., 0.);
-    float bm[4];
+    float bm[4]; // RGBA
 
     for (int i = 0; i < 3; i++)
     {
@@ -138,17 +147,28 @@ void drawBoxes(){
             // draw node
             glutSolidCube(1.);
 
-            // draw blocks on chain for each node
             // stop using pattern for blocks
             PatternA->Use(0);
             PatternB->Use(0);
             PatternC->Use(0);
 
+            // draw blocks on chain for each node
             SetMaterial(bm[0], bm[1], bm[2], bm[3]);
             drawBlocks();
         glPopMatrix();
     }
     glTranslatef(-1.5, 0., 0.);
+}
+
+
+void drawIncomingTx(float dTime){
+    if (STATE == idle){
+        float dy = -1.;
+        float dz = 3.0 - (3. * dTime);
+        glTranslatef(0., dy, dz);
+        glutSolidCube(0.5);
+        glTranslatef(0., -dy, -dz);
+    }
 }
 
 
@@ -173,6 +193,7 @@ void drawBlocks(){
     for (int i = 0; i < pick+1; i++){
         glTranslatef(0., 0.6, 0.);
         glutSolidCube(0.5);
+        drawBlockWire(0., 0., 0.);
     }
     glTranslatef(0., -1.2 - (0.6 * pick), 0.);
 }
@@ -188,6 +209,11 @@ void drawWires(){
 
     placeLeg(&CurvesStatic[2], 0., -1., 2., 1.5, -0.5, 0.);
     drawEazierCurve(wire_color[2], CurvesStatic[2]);
+}
+
+void drawBlockWire(float x, float y, float z){
+    placeLeg(&Stem, x, y, z, x, y + 0.2, z);
+    drawBezierCurve(1., 1., 1., Stem);
 }
 
 
