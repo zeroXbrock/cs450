@@ -169,6 +169,15 @@ void drawIncomingTx(float dTime){
         glutSolidCube(0.5);
         glTranslatef(0., -dy, -dz);
     }
+    else if (STATE == receiving){
+        for (int i = 0; i < NUM_BOXES; i++){
+            PatternA->Use();
+            glTranslatef(CurvesStatic[i].p2.x, CurvesStatic[i].p2.y, CurvesStatic[i].p2.z);
+            glutSolidCube(0.5);
+            glTranslatef(-CurvesStatic[i].p2.x, -CurvesStatic[i].p2.y, -CurvesStatic[i].p2.z);
+            PatternC->Use(0);
+        }
+    }
 }
 
 
